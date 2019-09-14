@@ -92,7 +92,7 @@ public class ConceptVuforiaSkyStoneNavigation extends LinearOpMode {
     //
     DcMotor left;
     DcMotor right;
-    //
+    //change
     @Override public void runOpMode() {
         /*
          * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
