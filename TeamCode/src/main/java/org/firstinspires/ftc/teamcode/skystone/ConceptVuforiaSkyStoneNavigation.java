@@ -31,6 +31,8 @@ package org.firstinspires.ftc.teamcode.skystone;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
@@ -50,37 +52,6 @@ import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.YZX;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.EXTRINSIC;
 import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.BACK;
 
-/**
- * This 2019-2020 OpMode illustrates the basics of using the Vuforia localizer to determine
- * positioning and orientation of robot on the SKYSTONE FTC field.
- * The code is structured as a LinearOpMode
- *
- * When images are located, Vuforia is able to determine the position and orientation of the
- * image relative to the camera.  This sample code then combines that information with a
- * knowledge of where the target images are on the field, to determine the location of the camera.
- *
- * From the Audience perspective, the Red Alliance station is on the right and the
- * Blue Alliance Station is on the left.
-
- * Eight perimeter targets are distributed evenly around the four perimeter walls
- * Four Bridge targets are located on the bridge uprights.
- * Refer to the Field Setup manual for more specific location details
- *
- * A final calculation then uses the location of the camera on the robot to determine the
- * robot's location and orientation on the field.
- *
- * @see VuforiaLocalizer
- * @see VuforiaTrackableDefaultListener
- * see  skystone/doc/tutorial/FTC_FieldCoordinateSystemDefinition.pdf
- *
- * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
- * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list.
- *
- * IMPORTANT: In order to use this OpMode, you need to obtain your own Vuforia license key as
- * is explained below.
- */
-
-
 @TeleOp(name="SKYSTONE Vuforia Nav", group ="testing")
 public class ConceptVuforiaSkyStoneNavigation extends LinearOpMode {
 
@@ -90,43 +61,26 @@ public class ConceptVuforiaSkyStoneNavigation extends LinearOpMode {
     //
     // NOTE: If you are running on a CONTROL HUB, with only one USB WebCam, you must select CAMERA_CHOICE = BACK; and PHONE_IS_PORTRAIT = false;
     //
+    //<editor-fold desc="Vuforia Variables">
     private static final VuforiaLocalizer.CameraDirection CAMERA_CHOICE = BACK;
-    private static final boolean PHONE_IS_PORTRAIT = false  ;
-
-    /*
-     * IMPORTANT: You need to obtain your own license key to use Vuforia. The string below with which
-     * 'parameters.vuforiaLicenseKey' is initialized is for illustration only, and will not function.
-     * A Vuforia 'Development' license key, can be obtained free of charge from the Vuforia developer
-     * web site at https://developer.vuforia.com/license-manager.
-     *
-     * Vuforia license keys are always 380 characters long, and look as if they contain mostly
-     * random data. As an example, here is a example of a fragment of a valid key:
-     *      ... yIgIzTqZ4mWjk9wd3cZO9T1axEqzuhxoGlfOOI2dRzKS4T0hQ8kT ...
-     * Once you've obtained a license key, copy the string from the Vuforia web site
-     * and paste it in to your code on the next line, between the double quotes.
-     */
+    private static final boolean PHONE_IS_PORTRAIT = false;
+    //
     private static final String VUFORIA_KEY =
             "AbxR5+T/////AAAAGR1YlvU/6EDzrJvG5EfPnXSFutoBr1aCusr0K3pKqPuWTBQsUb0mv5irjoX2Xf/GFvAvHyw8v1GBYgHwE+hNTcNj05kw3juX+Ur4l3HNnp5SfXV/8fave0xB7yVYZ/LBDraNnYXiuT+D/5iGfQ99PVVao3LI4uGUOvL9+3vbPqtTXLowqFJX5uE7R/W4iLmNqHgTCSzWcm/J1CzwWuOPD252FDE9lutdDVRri17DBX0C/D4mt6BdI5CpxhG6ZR0tm6Zh2uvljnCK6N42V5x/kXd+UrBgyP43CBAACQqgP6MEvQylUD58U4PeTUWe9Q4o6Xrx9QEwlr8v+pmi9nevKnmE2CrPPwQePkDUqradHHnU";
-
-    // Since ImageTarget trackables use mm to specifiy their dimensions, we must use mm for all the physical dimension.
     // We will define some constants and conversions here
     private static final float mmPerInch        = 25.4f;
     private static final float mmTargetHeight   = (6) * mmPerInch;          // the height of the center of the target image above the floor
-
     // Constant for Stone Target
     private static final float stoneZ = 2.00f * mmPerInch;
-
     // Constants for the center support targets
     private static final float bridgeZ = 6.42f * mmPerInch;
     private static final float bridgeY = 23 * mmPerInch;
     private static final float bridgeX = 5.18f * mmPerInch;
     private static final float bridgeRotY = 59;                                 // Units are degrees
     private static final float bridgeRotZ = 180;
-
     // Constants for perimeter targets
     private static final float halfField = 72 * mmPerInch;
     private static final float quadField  = 36 * mmPerInch;
-
     // Class Members
     private OpenGLMatrix lastLocation = null;
     private VuforiaLocalizer vuforia = null;
@@ -134,13 +88,18 @@ public class ConceptVuforiaSkyStoneNavigation extends LinearOpMode {
     private float phoneXRotate    = 0;
     private float phoneYRotate    = 0;
     private float phoneZRotate    = 0;
-
+    //</editor-fold>
+    //
+    DcMotor left;
+    DcMotor right;
+    //
     @Override public void runOpMode() {
         /*
          * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
          * We can pass Vuforia the handle to a camera preview resource (on the RC phone);
          * If no camera monitor is desired, use the parameter-less constructor instead (commented out below).
          */
+        //<editor-fold desc="Vuforia Field Variables">
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
 
@@ -151,7 +110,7 @@ public class ConceptVuforiaSkyStoneNavigation extends LinearOpMode {
 
         //  Instantiate the Vuforia engine
         vuforia = ClassFactory.getInstance().createVuforia(parameters);
-
+        //
         // Load the data sets for the trackable objects. These particular data
         // sets are stored in the 'assets' part of our application.
         VuforiaTrackables targetsSkyStone = this.vuforia.loadTrackablesFromAsset("Skystone");
@@ -186,6 +145,7 @@ public class ConceptVuforiaSkyStoneNavigation extends LinearOpMode {
         // For convenience, gather together all the trackable objects in one easily-iterable collection */
         List<VuforiaTrackable> allTrackables = new ArrayList<VuforiaTrackable>();
         allTrackables.addAll(targetsSkyStone);
+        //</editor-fold>
 
         /**
          * In order for localization to work, we need to tell the system where each target is on the field, and
@@ -208,6 +168,7 @@ public class ConceptVuforiaSkyStoneNavigation extends LinearOpMode {
         // Set the position of the Stone Target.  Since it's not fixed in position, assume it's at the field origin.
         // Rotated it to to face forward, and raised it to sit on the ground correctly.
         // This can be used for generic target-centric approach algorithms
+        //<editor-fold desc="Set Location of Field Elements">
         stoneTarget.setLocation(OpenGLMatrix
                 .translation(0, 0, stoneZ)
                 .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, -90)));
@@ -261,6 +222,7 @@ public class ConceptVuforiaSkyStoneNavigation extends LinearOpMode {
         rear2.setLocation(OpenGLMatrix
                 .translation(halfField, -quadField, mmTargetHeight)
                 .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, -90)));
+        //</editor-fold>
 
         //
         // Create a transformation matrix describing where the phone is on the robot.
@@ -275,8 +237,9 @@ public class ConceptVuforiaSkyStoneNavigation extends LinearOpMode {
         // The phone starts out lying flat, with the screen facing Up and with the physical top of the phone
         // pointing to the LEFT side of the Robot.
         // The two examples below assume that the camera is facing forward out the front of the robot.
-
+        //
         // We need to rotate the camera around it's long axis to bring the correct camera forward.
+        //<editor-fold desc="Set Phone Location on Robot">
         if (CAMERA_CHOICE == BACK) {
             phoneYRotate = -90;
         } else {
@@ -302,6 +265,7 @@ public class ConceptVuforiaSkyStoneNavigation extends LinearOpMode {
         for (VuforiaTrackable trackable : allTrackables) {
             ((VuforiaTrackableDefaultListener) trackable.getListener()).setPhoneInformation(robotFromCamera, parameters.cameraDirection);
         }
+        //</editor-fold>
 
         // WARNING:
         // In this sample, we do not wait for PLAY to be pressed.  Target Tracking is started immediately when INIT is pressed.
@@ -314,10 +278,14 @@ public class ConceptVuforiaSkyStoneNavigation extends LinearOpMode {
         // Note: To use the remote camera preview:
         // AFTER you hit Init on the Driver Station, use the "options menu" to select "Camera Stream"
         // Tap the preview window to receive a fresh image.
-
+        //
+        left = hardwareMap.dcMotor.get("left");
+        right = hardwareMap.dcMotor.get("right");
+        right.setDirection(DcMotorSimple.Direction.REVERSE);
+        //
         targetsSkyStone.activate();
         while (!isStopRequested()) {
-
+            //
             // check all the trackable targets to see which one (if any) is visible.
             targetVisible = false;
             for (VuforiaTrackable trackable : allTrackables) {
@@ -334,7 +302,6 @@ public class ConceptVuforiaSkyStoneNavigation extends LinearOpMode {
                     break;
                 }
             }
-
             // Provide feedback as to where the robot is located (if we know).
             if (targetVisible) {
                 // express position (translation) of robot in inches.
@@ -349,9 +316,18 @@ public class ConceptVuforiaSkyStoneNavigation extends LinearOpMode {
             else {
                 telemetry.addData("Visible Target", "none");
             }
+            //
+            left.setPower(gamepad1.left_stick_y);
+            right.setPower(gamepad1.right_stick_y);
+            telemetry.addData("left set power", gamepad1.left_stick_y + ", left get power: " + left.getPower());
+            telemetry.addData("right set power", gamepad1.right_stick_y + ", right get power: " + right.getPower());
+            //
             telemetry.update();
         }
-
+        //
+        left.setPower(0);
+        right.setPower(0);
+        //
         // Disable Tracking when we are done;
         targetsSkyStone.deactivate();
     }
