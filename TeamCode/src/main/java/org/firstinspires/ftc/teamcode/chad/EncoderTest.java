@@ -46,7 +46,7 @@ public class EncoderTest extends LinearOpMode {
         //
         waitForStartify();
         //
-        //Insert Code Here
+        moveToPosition(20, .4);
         //
     }
     //

@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.chad;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -15,7 +14,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 @Autonomous(name="Mecanum Test", group="chad")
-@Disabled
 public class mecanumChad extends LinearOpMode {
     //
     DcMotor frontleft;
@@ -29,6 +27,7 @@ public class mecanumChad extends LinearOpMode {
     Double diameter = 4.125;
     Double cpi = (cpr * gearratio)/(Math.PI * diameter); //counts per inch, 28cpr * gear ratio / (2 * pi * diameter (in inches, in the center))
     Double bias = 0.8;
+    Double meccyBias = 0.9;
     //
     //TODO: remember to allow gear ratio and diameter to be manually changed
     //
@@ -53,9 +52,8 @@ public class mecanumChad extends LinearOpMode {
         //
         waitForStartify();
         //
-        strafeToPosition(20, .4);
-        //4.875 -> 10
-        moveToPosition(20, .4);
+        turnWithGyro(90, .4);
+        //
     }
     //
     /*
@@ -63,10 +61,6 @@ public class mecanumChad extends LinearOpMode {
     To drive backward, simply make the inches input negative.
      */
     public void moveToPosition(double inches, double speed){
-        frontleft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        frontright.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        backleft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        backright.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         //
         int move = (int)(Math.round(inches*conversion));
         //
@@ -74,6 +68,11 @@ public class mecanumChad extends LinearOpMode {
         frontleft.setTargetPosition(frontleft.getCurrentPosition() + move);
         backright.setTargetPosition(backright.getCurrentPosition() + move);
         frontright.setTargetPosition(frontright.getCurrentPosition() + move);
+        //
+        frontleft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        frontright.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backleft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backright.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         //
         frontleft.setPower(speed);
         backleft.setPower(speed);
@@ -213,32 +212,25 @@ public class mecanumChad extends LinearOpMode {
     Negative input for inches results in left strafing.
      */
     public void strafeToPosition(double inches, double speed){
-        frontleft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        frontright.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        backleft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        backright.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         //
-        int move = (int)(Math.round(inches*conversion));
+        int move = (int)(Math.round(inches * cpi * meccyBias));
         //
         backleft.setTargetPosition(backleft.getCurrentPosition() - move);
         frontleft.setTargetPosition(frontleft.getCurrentPosition() + move);
         backright.setTargetPosition(backright.getCurrentPosition() + move);
         frontright.setTargetPosition(frontright.getCurrentPosition() - move);
         //
+        frontleft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        frontright.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backleft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backright.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        //
         frontleft.setPower(speed);
         backleft.setPower(speed);
         frontright.setPower(speed);
         backright.setPower(speed);
         //
-        while (frontleft.isBusy() && frontright.isBusy() && backleft.isBusy() && backright.isBusy()){
-            if (exit){
-                frontright.setPower(0);
-                frontleft.setPower(0);
-                backright.setPower(0);
-                backleft.setPower(0);
-                return;
-            }
-        }
+        while (frontleft.isBusy() && frontright.isBusy() && backleft.isBusy() && backright.isBusy()){}
         frontright.setPower(0);
         frontleft.setPower(0);
         backright.setPower(0);

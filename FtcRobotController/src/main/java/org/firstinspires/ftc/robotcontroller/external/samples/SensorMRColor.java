@@ -76,7 +76,7 @@ public class SensorMRColor extends LinearOpMode {
     boolean bPrevState = false;
     boolean bCurrState = false;
 
-    // bLedOn represents the state of the LED.
+    // bLedOn represents the state of the LED
     boolean bLedOn = true;
 
     // get a reference to our ColorSensor object.
