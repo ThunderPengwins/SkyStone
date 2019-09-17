@@ -52,7 +52,7 @@ public class mecanumChad extends LinearOpMode {
         //
         waitForStartify();
         //
-        turnWithGyro(90, .4);
+        //Insert code here
         //
     }
     //
@@ -292,7 +292,7 @@ public class mecanumChad extends LinearOpMode {
         frontleft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         backleft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         frontright.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        frontleft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        backright.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         //
         frontleft.setPower(input);
         backleft.setPower(input);

@@ -49,7 +49,7 @@ public class TractionTest extends LinearOpMode {
         //
         waitForStartify();
         //
-        moveToPosition(20, .4);
+        //Insert code here
         //
     }
     //

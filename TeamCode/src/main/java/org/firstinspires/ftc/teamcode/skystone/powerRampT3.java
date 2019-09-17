@@ -1,12 +1,12 @@
 package org.firstinspires.ftc.teamcode.skystone;
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
-@Autonomous(name="Ramping", group="testing")
-public class powerRampT1 extends LinearOpMode {
+@TeleOp(name="TeleRamping2", group="testing")
+public class powerRampT3 extends LinearOpMode {
     //
     DcMotor left;
     DcMotor right;
@@ -22,10 +22,13 @@ public class powerRampT1 extends LinearOpMode {
     //
     Double conversion = cpi * bias;
     //
-    Boolean error = false;
-    Double errordata = 0.0;
-    Integer errormode = 0;
-    Integer mode = 0;
+    Integer start;
+    Integer end;
+    Integer momode = 0;
+    Float leftj;
+    Float rightj;
+    Double speedt = 0.0;
+    Boolean pos = true;
     //
     public void runOpMode(){
         //
@@ -35,12 +38,45 @@ public class powerRampT1 extends LinearOpMode {
         //
         waitForStartify();
         //
-        rampToPosition(30, .4);
-        //
-        if(error){
-            telemetry.addData("error", errordata);
-            telemetry.update();
-            sleep(10000);
+        while (opModeIsActive()){
+            //
+            leftj = -gamepad1.left_stick_y;
+            rightj = -gamepad1.right_stick_y;
+            //
+            speedt = (double)leftj;
+            //
+            if(momode == 0 && (leftj != 0 || rightj != 0)){
+                //start ramp up (drive or turn)
+                //
+                start = left.getCurrentPosition();
+                //
+                if(leftj < 0){//left wheel moving backward
+                    end = start - (int)(conversion * (leftj / m1));
+                    pos = false;
+                }else{//left wheel moving forward
+                    end = start + (int)(conversion * (leftj / m1));
+                    pos = true;
+                }
+                //
+                if (leftj / rightj < 0){//turning
+                    momode = 1;
+                }else{//driving
+                    momode = 2;
+                }
+                //
+            }else if(momode == 1){//driving
+                rampUp();
+            }else if(momode == 2){//turning
+                //set active power
+            }else if (momode > 2){
+                //get ramp down power
+            }
+            //
+            if((momode == 1 || momode == 2) && (leftj == 0 && rightj == 0)){
+                //set ramp down
+                momode += 2;
+            }
+            //
         }
         //
     }
@@ -114,14 +150,6 @@ public class powerRampT1 extends LinearOpMode {
                 //
                 double curSpeed = getRampOfDistance(leftStart, left.getCurrentPosition(), leftEnd, speed, ms);
                 //
-                if(curSpeed < -1 || curSpeed > 1){
-                    error = true;
-                    if(Math.abs(curSpeed) > Math.abs(errordata)) {
-                        errordata = curSpeed;
-                        errormode = mode;
-                    }
-                }
-                //
                 telemetry.addData("curSpeed", curSpeed);
                 telemetry.update();
                 //
@@ -135,6 +163,34 @@ public class powerRampT1 extends LinearOpMode {
         //
     }
     //
+    public double rampUp(){
+        //
+        double speed = 0;
+        //
+        if(pos){
+            if(left.getCurrentPosition() > end){
+                if(momode == 1) {//drive
+                    left.setPower(speedt);
+                    right.setPower(speedt);
+                }else{
+                    left.setPower(speedt);
+                    right.setPower(-speedt);
+                }
+            }else{
+                double curSpeed = getRampSpeed();
+                if(momode == 1) {//drive
+                    left.setPower(curSpeed);
+                    right.setPower(curSpeed);
+                }else{
+                    left.setPower(curSpeed);
+                    right.setPower(curSpeed);
+                }
+            }
+        }
+        //
+        return speed;
+    }
+    //
     public double getRampOfDistance(int start, int location, int destination, double speed, double ms){
         //
         speed -= floor;
@@ -146,25 +202,37 @@ public class powerRampT1 extends LinearOpMode {
             //
             telemetry.addData("starting","");
             curSpeed = m1 * (currentD / conversion);
-            mode = 1;
             //
         }else if(currentD < (totalD - (ms * conversion))){
             //
             curSpeed = speed;
             telemetry.addData("active", "");
-            mode = 2;
             //
         }else{
             //
             curSpeed = -m1 * (((currentD - totalD) / conversion) + ms) + speed;
             telemetry.addData("stopping", "");
-            mode = 3;
             //
         }
         //
         curSpeed += floor;
         //
         return curSpeed;
+    }
+    //
+    public double getRampSpeed(){
+        //
+        Double speed = 0.0;
+        //
+        if(momode < 3){//starting
+            //
+            //
+        }else{//ending
+            //
+        }
+        //
+        return speed;
+        //
     }
     //
     /*

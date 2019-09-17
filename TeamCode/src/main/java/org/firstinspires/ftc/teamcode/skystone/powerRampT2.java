@@ -1,11 +1,13 @@
 package org.firstinspires.ftc.teamcode.skystone;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 @TeleOp(name="teleRamping", group="testing")
+@Disabled
 public class powerRampT2 extends LinearOpMode {
     //
     DcMotor left;
