@@ -67,7 +67,7 @@ public class powerRampT3 extends LinearOpMode {
             }else if(momode == 1){//driving
                 rampUp();
             }else if(momode == 2){//turning
-                //set active power
+                rampUp();
             }else if (momode > 2){
                 //get ramp down power
             }
@@ -76,6 +76,9 @@ public class powerRampT3 extends LinearOpMode {
                 //set ramp down
                 momode += 2;
             }
+            //
+            telemetry.addData("momode", momode);
+            telemetry.update();
             //
         }
         //
@@ -226,8 +229,11 @@ public class powerRampT3 extends LinearOpMode {
         //
         if(momode < 3){//starting
             //
+            speed = m1 * ((left.getCurrentPosition() - start) / conversion);
             //
         }else{//ending
+            //
+            //ending speed
             //
         }
         //
