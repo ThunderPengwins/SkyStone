@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.chad;
+package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
@@ -13,21 +13,21 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
-@Autonomous(name="Mecanum Test", group="chad")
-public class mecanumChad extends LinearOpMode {
+@Autonomous(name="hello", group="chad")
+public class hello extends LinearOpMode {
     //
     DcMotor frontleft;
     DcMotor frontright;
     DcMotor backleft;
     DcMotor backright;
     //28 * 20 / (2ppi * 4.125)
-    Double width = 15.0; //inches
+    Double width = 16.0; //inches
     Integer cpr = 28; //counts per rotation
     Integer gearratio = 40;
     Double diameter = 4.125;
     Double cpi = (cpr * gearratio)/(Math.PI * diameter); //counts per inch, 28cpr * gear ratio / (2 * pi * diameter (in inches, in the center))
-    Double bias = 0.8;
-    Double meccyBias = 0.9;
+    Double bias = 0.8;//default 0.8
+    Double meccyBias = 0.9;//change to adjust only strafing movement
     //
     Double conversion = cpi * bias;
     Boolean exit = false;
@@ -50,7 +50,21 @@ public class mecanumChad extends LinearOpMode {
         //
         waitForStartify();
         //
-        //Insert code here
+        moveToPosition(100.2, 0.2);
+        //
+        strafeToPosition(53.6, 0.2);
+        //
+        moveToPosition(-18, 0.2);
+        //
+        turnWithGyro(45, -0.2);
+        //
+        moveToPosition(50.4, 0.2);
+        //
+        turnWithGyro(45, -0.2);
+        //
+        moveToPosition(54.2, 0.2);
+        //
+        moveToPosition(-55.2, 0.2);
         //
     }
     //

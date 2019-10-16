@@ -13,9 +13,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
-@Autonomous(name="Mecanum Test", group="chad")
-public class mecanumChad extends LinearOpMode {
-    //
+@Autonomous (name="holonomic test", group="chad")
+public class holonomicTest extends LinearOpMode {
     DcMotor frontleft;
     DcMotor frontright;
     DcMotor backleft;
@@ -23,11 +22,10 @@ public class mecanumChad extends LinearOpMode {
     //28 * 20 / (2ppi * 4.125)
     Double width = 15.0; //inches
     Integer cpr = 28; //counts per rotation
-    Integer gearratio = 40;
-    Double diameter = 4.125;
+    double gearratio = 20;
+    Double diameter = 4.0;
     Double cpi = (cpr * gearratio)/(Math.PI * diameter); //counts per inch, 28cpr * gear ratio / (2 * pi * diameter (in inches, in the center))
-    Double bias = 0.8;
-    Double meccyBias = 0.9;
+    Double bias = 0.714;
     //
     Double conversion = cpi * bias;
     Boolean exit = false;
@@ -50,7 +48,7 @@ public class mecanumChad extends LinearOpMode {
         //
         waitForStartify();
         //
-        //Insert code here
+        strafeToPosition(20, .2);
         //
     }
     //
@@ -211,7 +209,7 @@ public class mecanumChad extends LinearOpMode {
      */
     public void strafeToPosition(double inches, double speed){
         //
-        int move = (int)(Math.round(inches * cpi * meccyBias));
+        int move = (int)(Math.round(inches * conversion));
         //
         backleft.setTargetPosition(backleft.getCurrentPosition() - move);
         frontleft.setTargetPosition(frontleft.getCurrentPosition() + move);
@@ -224,8 +222,8 @@ public class mecanumChad extends LinearOpMode {
         backright.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         //
         frontleft.setPower(speed);
-        backleft.setPower(speed);
-        frontright.setPower(speed);
+        backleft.setPower(-speed);
+        frontright.setPower(-speed);
         backright.setPower(speed);
         //
         while (frontleft.isBusy() && frontright.isBusy() && backleft.isBusy() && backright.isBusy()){}

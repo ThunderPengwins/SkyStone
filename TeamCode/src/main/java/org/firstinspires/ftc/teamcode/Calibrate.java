@@ -1,14 +1,12 @@
-package org.firstinspires.ftc.teamcode.chad;
+package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
-@Autonomous(name="FCalibrate", group="chad")
-@Disabled
-public class FWCalibrate extends LinearOpMode {
+@Autonomous(name="Calibrate", group="chad")
+public class Calibrate extends LinearOpMode {
     //
     DcMotor frontleft;
     DcMotor frontright;
@@ -16,10 +14,10 @@ public class FWCalibrate extends LinearOpMode {
     DcMotor backright;
     //Calculate encoder conversion
     Integer cpr = 28; //counts per rotation
-    Integer gearratio = 20;
+    Integer gearratio = 40;
     Double diameter = 4.125;
     Double cpi = (cpr * gearratio) / (Math.PI * diameter); //counts per inch -> counts per rotation / circumference
-    Double bias = 1.0;//adjust until your robot goes 20 inches
+    Double bias = 0.8;//adjust until your robot goes 20 inches
     //
     Double conversion = cpi * bias;
     //

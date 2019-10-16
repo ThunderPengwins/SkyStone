@@ -1,12 +1,13 @@
 package org.firstinspires.ftc.teamcode.skystone;
 
+import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 
-@TeleOp(name = "The Turny Turn Turn", group = "Tele-Op")
+@TeleOp(name = "The Turny Turn Turn", group = "Stest")
 public class TurnyTurnyWheels extends LinearOpMode {
     //
     DcMotor frontRight;
@@ -14,10 +15,12 @@ public class TurnyTurnyWheels extends LinearOpMode {
     DcMotor backLeft;
     DcMotor backRight;
     //
+    RevBlinkinLedDriver coolLights;
+    //
     double aWheelsPower;
     double bWheelsPower;
     double totalPower;
-    double powerFactor = .5;
+    double powerFactor = .25;
     //
     float leftx;
     float lefty;
@@ -28,13 +31,20 @@ public class TurnyTurnyWheels extends LinearOpMode {
     //
     public void runOpMode(){
         //
+        coolLights = hardwareMap.get(RevBlinkinLedDriver.class, "lights");
+        //
         frontRight = hardwareMap.dcMotor.get("frontright");
         frontLeft = hardwareMap.dcMotor.get("frontleft");
         backRight = hardwareMap.dcMotor.get("backright");
         backLeft = hardwareMap.dcMotor.get("backleft");
         //
-        frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
-        backRight.setDirection(DcMotorSimple.Direction.REVERSE);
+        frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        //
+        frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         //
         waitForStart();
         //
@@ -47,13 +57,17 @@ public class TurnyTurnyWheels extends LinearOpMode {
             if(leftx == 0 && lefty == 0 && righty == 0){
                 //
                 still();
+                coolLights.setPattern(RevBlinkinLedDriver.BlinkinPattern.DARK_RED);
                 //
             }else if(righty == 0){
                 //
                 moveForward();
+                coolLights.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
                 //
             }else{
                 //
+                turnRobot();
+                coolLights.setPattern(RevBlinkinLedDriver.BlinkinPattern.AQUA);
                 telemetry.addData("You are", "turning");
                 //
             }
@@ -71,7 +85,7 @@ public class TurnyTurnyWheels extends LinearOpMode {
         if(lefty > 0){
             angle = Math.acos(leftx / totalPower) * 180 / Math.PI;
         }else {
-            angle = 180 + (Math.acos(leftx / totalPower) * 180 / Math.PI);
+            angle = 360 - (Math.acos(leftx / totalPower) * 180 / Math.PI);
         }
         angle -= 45;
         //
@@ -83,13 +97,22 @@ public class TurnyTurnyWheels extends LinearOpMode {
         frontLeft.setPower(aWheelsPower * totalPower * powerFactor);
         backRight.setPower(aWheelsPower * totalPower * powerFactor);
         //
+        telemetry.addData("leftx", leftx);
+        telemetry.addData("Calc Angle", angle);
         telemetry.addData("a power", aWheelsPower);
         telemetry.addData("b power", bWheelsPower);
         telemetry.addData("total power", totalPower);
     }
     //
-    public void turnRobot(double rightStickInput){
-        //I MADE A CHANGE SO LET ME PUSH AGAIN
+    public void turnRobot(){
+        //
+        double internal = 0.5;
+        //
+        frontLeft.setPower(righty * powerFactor * internal);
+        frontRight.setPower(-righty * powerFactor * internal);
+        backLeft.setPower(righty * powerFactor * internal);
+        backRight.setPower(-righty * powerFactor * internal);
+        //
     }
     //
     public void still(){

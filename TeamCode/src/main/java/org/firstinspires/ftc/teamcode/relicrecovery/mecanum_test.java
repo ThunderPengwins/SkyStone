@@ -44,9 +44,9 @@ public class mecanum_test extends LinearOpMode {
         //
         while (opModeIsActive()){
             //
-            drive = -gamepad1.left_stick_y; //left joystick moving up and down
-            turn = gamepad1.right_stick_x; //right joystick left and right
-            leftX = -gamepad1.left_stick_x; //left joystick moving right and left
+            drive = -gamepad1.left_stick_y * 0.5; //left joystick moving up and down
+            turn = gamepad1.right_stick_x * 0.5; //right joystick left and right
+            leftX = -gamepad1.left_stick_x * 0.5; //left joystick moving right and left
             //
             figureOutMovementOfRobot();
             //

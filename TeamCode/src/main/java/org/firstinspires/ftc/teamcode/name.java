@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.chad;
+package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
@@ -13,21 +13,19 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
-@Autonomous(name="Mecanum Test", group="chad")
-public class mecanumChad extends LinearOpMode {
+@Autonomous(name="name", group="chad")
+public class name extends LinearOpMode {
     //
-    DcMotor frontleft;
-    DcMotor frontright;
-    DcMotor backleft;
-    DcMotor backright;
-    //28 * 20 / (2ppi * 4.125)
-    Double width = 15.0; //inches
+    DcMotor left;
+    DcMotor right;
+    //Calculate encoder conversion
+    Double width = 18.0; //inches
     Integer cpr = 28; //counts per rotation
     Integer gearratio = 40;
     Double diameter = 4.125;
-    Double cpi = (cpr * gearratio)/(Math.PI * diameter); //counts per inch, 28cpr * gear ratio / (2 * pi * diameter (in inches, in the center))
-    Double bias = 0.8;
-    Double meccyBias = 0.9;
+    Double cpi = (cpr * gearratio)/(Math.PI * diameter); //counts per inch -> counts per rotation / circumference
+    Double bias = 1.0;
+    Double arcBias = 0.0;//Not recommended
     //
     Double conversion = cpi * bias;
     Boolean exit = false;
@@ -40,18 +38,13 @@ public class mecanumChad extends LinearOpMode {
         //
         initGyro();
         //
-        frontleft = hardwareMap.dcMotor.get("frontleft");
-        frontright = hardwareMap.dcMotor.get("frontright");
-        backleft = hardwareMap.dcMotor.get("backleft");
-        backright = hardwareMap.dcMotor.get("backright");
-
-        frontright.setDirection(DcMotorSimple.Direction.REVERSE);
-        backright.setDirection(DcMotorSimple.Direction.REVERSE);
+        left = hardwareMap.dcMotor.get("left");
+        right = hardwareMap.dcMotor.get("right");
+        right.setDirection(DcMotorSimple.Direction.REVERSE);//If your robot goes backward, switch this from right to left
         //
         waitForStartify();
         //
-        //Insert code here
-        //
+
     }
     //
     /*
@@ -59,37 +52,44 @@ public class mecanumChad extends LinearOpMode {
     To drive backward, simply make the inches input negative.
      */
     public void moveToPosition(double inches, double speed){
+        left.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        right.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         //
-        int move = (int)(Math.round(inches*conversion));
-        //
-        backleft.setTargetPosition(backleft.getCurrentPosition() + move);
-        frontleft.setTargetPosition(frontleft.getCurrentPosition() + move);
-        backright.setTargetPosition(backright.getCurrentPosition() + move);
-        frontright.setTargetPosition(frontright.getCurrentPosition() + move);
-        //
-        frontleft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        frontright.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        backleft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        backright.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        //
-        frontleft.setPower(speed);
-        backleft.setPower(speed);
-        frontright.setPower(speed);
-        backright.setPower(speed);
-        //
-        while (frontleft.isBusy() && frontright.isBusy() && backleft.isBusy() && backright.isBusy()){
-            if (exit){
-                frontright.setPower(0);
-                frontleft.setPower(0);
-                backright.setPower(0);
-                backleft.setPower(0);
-                return;
-            }
+        if (inches < 5) {
+            int move = (int) (Math.round(inches * conversion));
+            //
+            left.setTargetPosition(left.getCurrentPosition() + move);
+            right.setTargetPosition(right.getCurrentPosition() + move);
+            //
+            left.setPower(speed);
+            right.setPower(speed);
+            //
+            while (left.isBusy() && right.isBusy()) {}
+            right.setPower(0);
+            left.setPower(0);
+        }else{
+            int move1 = (int)(Math.round((inches - 5) * conversion));
+            int movel2 = left.getCurrentPosition() + (int)(Math.round(inches * conversion));
+            int mover2 = right.getCurrentPosition() + (int)(Math.round(inches * conversion));
+            //
+            left.setTargetPosition(left.getCurrentPosition() + move1);
+            right.setTargetPosition(right.getCurrentPosition() + move1);
+            //
+            left.setPower(speed);
+            right.setPower(speed);
+            //
+            while (left.isBusy() && right.isBusy()) {}
+            //
+            left.setTargetPosition(movel2);
+            right.setTargetPosition(mover2);
+            //
+            left.setPower(.1);
+            right.setPower(.1);
+            //
+            while (left.isBusy() && right.isBusy()) {}
+            right.setPower(0);
+            left.setPower(0);
         }
-        frontright.setPower(0);
-        frontleft.setPower(0);
-        backright.setPower(0);
-        backleft.setPower(0);
         return;
     }
     //
@@ -114,8 +114,8 @@ public class mecanumChad extends LinearOpMode {
         //
         if (speedDirection > 0){//set target positions
             //<editor-fold desc="turn right">
-            if (degrees > 10){
-                first = (degrees - 10) + devertify(yaw);
+            if (degrees > 20){
+                first = (degrees - 20) + devertify(yaw);
                 second = degrees + devertify(yaw);
             }else{
                 first = devertify(yaw);
@@ -124,8 +124,8 @@ public class mecanumChad extends LinearOpMode {
             //</editor-fold>
         }else{
             //<editor-fold desc="turn left">
-            if (degrees > 10){
-                first = devertify(-(degrees - 10) + devertify(yaw));
+            if (degrees > 20){
+                first = devertify(-(degrees - 20) + devertify(yaw));
                 second = devertify(-degrees + devertify(yaw));
             }else{
                 first = devertify(yaw);
@@ -179,6 +179,7 @@ public class mecanumChad extends LinearOpMode {
                 telemetry.addData("second after", convertify(second));
                 telemetry.update();
             }
+        }else {
             while (!((seconda < yaw && yaw < 180) || (-180 < yaw && yaw < secondb)) && opModeIsActive()) {//within range?
                 angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
                 gravity = imu.getGravity();
@@ -188,51 +189,59 @@ public class mecanumChad extends LinearOpMode {
                 telemetry.addData("second after", convertify(second));
                 telemetry.update();
             }
-            frontleft.setPower(0);
-            frontright.setPower(0);
-            backleft.setPower(0);
-            backright.setPower(0);
         }
         //</editor-fold>
         //
-        frontleft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        frontright.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backleft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backright.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        frontleft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        frontright.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        backleft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        backright.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        left.setPower(0);
+        right.setPower(0);
     }
     //
     /*
-    This function uses the encoders to strafe left or right.
-    Negative input for inches results in left strafing.
+    This is our function for arcing, a special type of movement that allows for turning while moving.
+    Use the angle and length to determine where the robot will end up.
      */
-    public void strafeToPosition(double inches, double speed){
+    public void arc(Double angle, Double length, Double speed){
+        //\frac{c*sin*(90-b)}{\sin2b}
+        Double radius = ((length + arcBias) * Math.sin(Math.toRadians(90-angle)))/(Math.sin(Math.toRadians(2 * angle)));
+        telemetry.addData("radius", radius);
+        telemetry.update();
+        //2\pi\left(r+a\right)\left(\frac{b}{180}\right)
+        //2\pi\left(r-a\right)\left(\frac{b}{180}\right)
         //
-        int move = (int)(Math.round(inches * cpi * meccyBias));
+        Double rightMotor;
+        Double leftMotor;
+        rightMotor = 2 * Math.PI * (radius - (width / 2)) * (angle / 180);
+        leftMotor = 2 * Math.PI * (radius + (width / 2)) * (angle / 180);
         //
-        backleft.setTargetPosition(backleft.getCurrentPosition() - move);
-        frontleft.setTargetPosition(frontleft.getCurrentPosition() + move);
-        backright.setTargetPosition(backright.getCurrentPosition() + move);
-        frontright.setTargetPosition(frontright.getCurrentPosition() - move);
+        int rightd = (int) (Math.round(rightMotor * conversion));
+        int leftd = (int) (Math.round(leftMotor * conversion));
         //
-        frontleft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        frontright.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        backleft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        backright.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        telemetry.addData("left motor", leftMotor + ", " + leftd);
+        telemetry.addData("right motor", rightMotor + ", " + rightd);
+        telemetry.update();
         //
-        frontleft.setPower(speed);
-        backleft.setPower(speed);
-        frontright.setPower(speed);
-        backright.setPower(speed);
+        left.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        right.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         //
-        while (frontleft.isBusy() && frontright.isBusy() && backleft.isBusy() && backright.isBusy()){}
-        frontright.setPower(0);
-        frontleft.setPower(0);
-        backright.setPower(0);
-        backleft.setPower(0);
+        left.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        right.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        //
+        right.setTargetPosition(right.getCurrentPosition() + rightd);
+        left.setTargetPosition(left.getCurrentPosition() + leftd);
+        //
+        left.setPower(speed);
+        right.setPower((rightMotor / leftMotor) * speed);
+        //
+        while (left.isBusy() || right.isBusy()){
+            if (exit){
+                right.setPower(0);
+                left.setPower(0);
+                return;
+            }
+        }
+        //
+        right.setPower(0);
+        left.setPower(0);
         return;
     }
     //
@@ -245,8 +254,8 @@ public class mecanumChad extends LinearOpMode {
     }
     //
     /*
-    These functions are used in the turnWithGyro function to ensure inputs
-    are interpreted properly.
+    These functions are used in the turnWithGyro function to ensure angle
+    inputs are interpreted properly.
      */
     public double devertify(double degrees){
         if (degrees < 0){
@@ -284,18 +293,14 @@ public class mecanumChad extends LinearOpMode {
     //
     /*
     This function is used in the turnWithGyro function to set the
-    encoder mode and turn.
+    encoder mode and begin turning.
      */
     public void turnWithEncoder(double input){
-        frontleft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backleft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        frontright.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backright.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        left.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        right.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         //
-        frontleft.setPower(input);
-        backleft.setPower(input);
-        frontright.setPower(-input);
-        backright.setPower(-input);
+        left.setPower(input);
+        right.setPower(-input);
     }
     //
 }

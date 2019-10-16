@@ -31,9 +31,6 @@ package org.firstinspires.ftc.teamcode.skystone;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.ColorSensor;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
@@ -91,9 +88,9 @@ public class ConceptVuforiaSkyStoneNavigation extends LinearOpMode {
     private float phoneZRotate    = 0;
     //</editor-fold>
     //
-    DcMotor left;
-    DcMotor right;
-    ColorSensor color;
+    //DcMotor left;
+    //DcMotor right;
+    //ColorSensor color;
     //change
     @Override public void runOpMode() {
         /*
@@ -281,10 +278,10 @@ public class ConceptVuforiaSkyStoneNavigation extends LinearOpMode {
         // AFTER you hit Init on the Driver Station, use the "options menu" to select "Camera Stream"
         // Tap the preview window to receive a fresh image.
         //
-        left = hardwareMap.dcMotor.get("left");
-        right = hardwareMap.dcMotor.get("right");
-        right.setDirection(DcMotorSimple.Direction.REVERSE);
-        color = hardwareMap.get(ColorSensor.class, "color");
+        //left = hardwareMap.dcMotor.get("left");
+        //right = hardwareMap.dcMotor.get("right");
+        //right.setDirection(DcMotorSimple.Direction.REVERSE);
+        //color = hardwareMap.get(ColorSensor.class, "color");
         //
         targetsSkyStone.activate();
         while (!isStopRequested()) {
@@ -320,19 +317,19 @@ public class ConceptVuforiaSkyStoneNavigation extends LinearOpMode {
                 telemetry.addData("Visible Target", "none");
             }
             //
-            left.setPower(-gamepad1.left_stick_y);
-            right.setPower(-gamepad1.right_stick_y);
-            telemetry.addData("left set power", -gamepad1.left_stick_y + ", left get power: " + left.getPower());
-            telemetry.addData("right set power", -gamepad1.right_stick_y + ", right get power: " + right.getPower());
-            telemetry.addData("red", color.red());
-            telemetry.addData("green", color.green());
-            telemetry.addData("blue", color.blue());
+            //left.setPower(-gamepad1.left_stick_y);
+            //right.setPower(-gamepad1.right_stick_y);
+            //telemetry.addData("left set power", -gamepad1.left_stick_y + ", left get power: " + left.getPower());
+            //telemetry.addData("right set power", -gamepad1.right_stick_y + ", right get power: " + right.getPower());
+            //telemetry.addData("red", color.red());
+            //telemetry.addData("green", color.green());
+            //telemetry.addData("blue", color.blue());
             //
             telemetry.update();
         }
         //
-        left.setPower(0);
-        right.setPower(0);
+        //left.setPower(0);
+        //right.setPower(0);
         //
         // Disable Tracking when we are done;
         targetsSkyStone.deactivate();
