@@ -142,14 +142,11 @@ public abstract class HoloGrande extends LinearOpMode {
         //
     }
     //
-    public void globalMoveTurn(double x, double y, double t, double factor, double turnFactor, double ayaw) {
+    public void globalMoveTurn(double x, double y, double t, double factor, double turnFactor, double origin) {
         //
-        double cyaw = -angles.firstAngle;
-        if (t > 0 && cyaw - ayaw < -90) {
-            cyaw += 360;
-        } else if (t < 0 && cyaw - ayaw > 90) {
-            cyaw = -360 - cyaw;
-        }
+        double ang = -angles.firstAngle;
+        double cang = ang - origin;
+        cang = fixAngle(cang);
         //
         double total = pythagorus(y, x);//find total power
         //
@@ -160,12 +157,13 @@ public abstract class HoloGrande extends LinearOpMode {
             aWheelsPower = 0;
             bWheelsPower = 0;
         } else {
-            double angle = calcHoloAngle(x, y, total);//calculate angle of joystick
+            double h = calcHoloAngle(x, y, total);//calculate angle of joystick
             //
-            angle += cyaw - ayaw;
+            double g = h - cang;
+            g = fixAngle(g);
             //
-            aWheelsPower = Math.cos(angle * Math.PI / 180);//front left & back right
-            bWheelsPower = Math.sin(angle * Math.PI / 180);//front right & back left
+            aWheelsPower = Math.cos(g * Math.PI / 180);//front left & back right
+            bWheelsPower = Math.sin(g * Math.PI / 180);//front right & back left
         }
         //
         double a = ((0.5 * aWheelsPower * total) + (0.5 * turnFactor * t)) * factor;//front left
@@ -183,6 +181,47 @@ public abstract class HoloGrande extends LinearOpMode {
         backLeft.setPower(c);
         backRight.setPower(d);//set motor powers
         //
+    }
+    //
+    public double fixAngle(double angle){
+        if(angle > 180){
+            angle -= 360;
+        }else if(angle < -180){
+            angle += 180;
+        }
+        return angle;
+    }
+    //
+    public double conformLeft(double origin){
+        //
+        return Math.floor((fixAngle(getAngle() - origin)) / 45) * 45;
+    }
+    //
+    public double conformRight(double origin){
+        //
+        return Math.ceil((fixAngle(getAngle() - origin)) / 45) * 45;
+    }
+    //
+    public boolean inBounds(double target, double error){
+        //
+        double rB = target + error;
+        double lB = target - error;
+        //
+        double a = getAngle();
+        //
+        if (fixAngle(rB) != rB || fixAngle(lB) != lB){
+            if ((lB < a && a < 180) || (-180 < a && a < rB)){
+                return true;
+            }else {
+                return false;
+            }
+        }else{
+            if (lB < getAngle() && getAngle() < rB){
+                return true;
+            }else {
+                return false;
+            }
+        }
     }
     //
     public void turnRobot(double rx, double factor, double turnFactor){
@@ -231,14 +270,5 @@ public abstract class HoloGrande extends LinearOpMode {
     public double getAngle(){
         angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         return -angles.firstAngle;
-    }
-    //
-    public double fixAngle(double angle){
-        if(angle > 180){
-            angle -= 360;
-        }else if(angle < -180){
-            angle += 180;
-        }
-        return angle;
     }
 }
