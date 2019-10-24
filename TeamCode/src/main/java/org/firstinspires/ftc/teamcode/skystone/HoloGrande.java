@@ -27,6 +27,9 @@ public abstract class HoloGrande extends LinearOpMode {
     DcMotor backLeft;
     DcMotor backRight;
     //
+    Double loctarang;
+    Double glotarang;
+    //
     private static MediaPlayer mediaPlayer = null;
     //
     public void motorHardware(){
@@ -39,6 +42,11 @@ public abstract class HoloGrande extends LinearOpMode {
     public void setMotorReversals(){
         frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+    }
+    //
+    public void secondaryMotorReversals(){
+        frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
+        backRight.setDirection(DcMotorSimple.Direction.REVERSE);
     }
     //
     public void motorsWithEncoders(){
@@ -144,9 +152,7 @@ public abstract class HoloGrande extends LinearOpMode {
     //
     public void globalMoveTurn(double x, double y, double t, double factor, double turnFactor, double origin) {
         //
-        double ang = -angles.firstAngle;
-        double cang = ang - origin;
-        cang = fixAngle(cang);
+        double cang = fixAngle(getAngle() - origin);
         //
         double total = pythagorus(y, x);//find total power
         //
@@ -158,23 +164,30 @@ public abstract class HoloGrande extends LinearOpMode {
             bWheelsPower = 0;
         } else {
             double h = calcHoloAngle(x, y, total);//calculate angle of joystick
+            loctarang = h;
             //
-            double g = h - cang;
-            g = fixAngle(g);
+            double g = h + cang;
+            //g = fixAngle(g);
+            glotarang = g;
             //
             aWheelsPower = Math.cos(g * Math.PI / 180);//front left & back right
             bWheelsPower = Math.sin(g * Math.PI / 180);//front right & back left
         }
         //
-        double a = ((0.5 * aWheelsPower * total) + (0.5 * turnFactor * t)) * factor;//front left
-        double b = ((0.5 * bWheelsPower * total) + (-0.5 * turnFactor * t)) * factor;//front right
-        double c = ((0.5 * bWheelsPower * total) + (0.5 * turnFactor * t)) * factor;//back left
-        double d = ((0.5 * aWheelsPower * total) + (-0.5 * turnFactor * t)) * factor;//back right
+        double moveP = 0.5;
+        if(aWheelsPower == 0 && bWheelsPower == 0){
+            moveP = 0;
+        }else if(t == 0){
+            moveP = 1;
+        }
+        double turnP = 1 - moveP;
         //
-        telemetry.addData("turn factor", turnFactor);
-        telemetry.addData("t", t);
-        telemetry.addData("factor", factor);
-        telemetry.addData("a", a);
+        double a = ((moveP * aWheelsPower * total) + (turnP * turnFactor * t)) * factor;//front left
+        double b = ((moveP * bWheelsPower * total) + (-turnP * turnFactor * t)) * factor;//front right
+        double c = ((moveP * bWheelsPower * total) + (turnP * turnFactor * t)) * factor;//back left
+        double d = ((moveP * aWheelsPower * total) + (-turnP * turnFactor * t)) * factor;//back right
+        //
+        telemetry.addData("activated", "global move turn");
         //
         frontLeft.setPower(a);
         frontRight.setPower(b);

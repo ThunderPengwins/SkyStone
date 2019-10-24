@@ -24,7 +24,7 @@ public class C3PO extends HoloLumi{
         //
         motorHardware();
         //
-        setMotorReversals();
+        secondaryMotorReversals();
         //
         motorsWithEncoders();
         //
@@ -42,9 +42,9 @@ public class C3PO extends HoloLumi{
                 dave();
             }
             //
-            leftx = -gamepad1.left_stick_x;
-            lefty = gamepad1.left_stick_y;
-            rightx = -gamepad1.right_stick_x;
+            leftx = gamepad1.left_stick_x;
+            lefty = -gamepad1.left_stick_y;
+            rightx = gamepad1.right_stick_x;
             //
             direction = fixAngle(getAngle() - origin);
             //
@@ -75,12 +75,25 @@ public class C3PO extends HoloLumi{
                 mT = conformRight(origin);
                 mr = 0.5;
             }
+            if (gamepad1.dpad_left){
+                frontLeft.setPower(.5);
+            }else if(gamepad1.dpad_right){
+                frontRight.setPower(.5);
+            }else if (gamepad1.dpad_down){
+                frontLeft.setPower(0);
+                frontRight.setPower(0);
+            }
             //
+            telemetry.update();
+            telemetry.addData("local target angle", loctarang);
+            telemetry.addData("global target angle", glotarang);
             telemetry.addData("relative yaw", getAngle());
-            telemetry.addData("absolute yaw", fixAngle(getAngle()));
+            telemetry.addData("absolute yaw", fixAngle(getAngle() - origin));
             telemetry.addData("origin", origin);
             telemetry.addData("conforming?", ma);
-            telemetry.update();
+            telemetry.addData("leftx", leftx);
+            telemetry.addData("lefty", lefty);
+            telemetry.addData("rightx", rightx);
         }
     }
     //
