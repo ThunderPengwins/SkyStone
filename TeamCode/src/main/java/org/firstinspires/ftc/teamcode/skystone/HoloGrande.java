@@ -5,8 +5,12 @@ import android.media.MediaPlayer;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -30,8 +34,28 @@ public abstract class HoloGrande extends LinearOpMode {
     Double loctarang;
     Double glotarang;
     //
+    //<editor-fold desc="hardwares 1">
+    Servo grabber;
+    DcMotor lifter;
+    DcMotor extender;
+    DigitalChannel qbert;//cube in
+    DigitalChannel george;//gantry down
+    DistanceSensor upity;
+    //
+    Servo leftHook;
+    Servo rightHook;
+    DigitalChannel leftTouch;
+    DigitalChannel rightTouch;
+    ColorSensor leftColor;
+    ColorSensor rightColor;
+    //
+    DistanceSensor frontLeftD;
+    DistanceSensor frontRightD;
+    //</editor-fold>
+    //
     private static MediaPlayer mediaPlayer = null;
     //
+    //<editor-fold desc="establishing">
     public void motorHardware(){
         frontRight = hardwareMap.dcMotor.get("frontright");
         frontLeft = hardwareMap.dcMotor.get("frontleft");
@@ -70,10 +94,53 @@ public abstract class HoloGrande extends LinearOpMode {
         backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
     //
+    public void firstHarwares(){
+        grabber = hardwareMap.servo.get("grabber");
+        lifter = hardwareMap.dcMotor.get("lifter");
+        extender = hardwareMap.dcMotor.get("extender");
+        qbert = hardwareMap.digitalChannel.get("qbert");
+        george = hardwareMap.digitalChannel.get("george");
+        upity = hardwareMap.get(DistanceSensor.class, "upity");
+        //
+        leftHook = hardwareMap.servo.get("lefthook");
+        rightHook = hardwareMap.servo.get("righthook");
+        leftTouch = hardwareMap.digitalChannel.get("lefttouch");
+        rightTouch = hardwareMap.digitalChannel.get("righttouch");
+        leftColor = hardwareMap.colorSensor.get("leftcolor");
+        rightColor = hardwareMap.colorSensor.get("rightcolor");
+        //
+        frontLeftD = hardwareMap.get(DistanceSensor.class, "frontLeftCD");
+        frontRightD = hardwareMap.get(DistanceSensor.class, "frontRightCD");
+    }
+    //
     public void waitForStartify(){
         waitForStart();
     }
     //
+    public void initGyro(){
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        //parameters.calibrationDataFile = "GyroCal.json"; // see the calibration sample opmode
+        parameters.loggingEnabled      = true;
+        parameters.loggingTag          = "IMU";
+        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
+        //
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        telemetry.addData("init imu","");
+        telemetry.update();
+        imu.initialize(parameters);
+        telemetry.addData("imu initiated", "");
+        telemetry.update();
+    }
+    //
+    public double getAngle(){
+        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        return -angles.firstAngle;
+    }
+    //</editor-fold>
+    //
+    //<editor-fold desc="maths operations">
     public double pythagorus(double a, double b){
         return Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2));
     }
@@ -89,6 +156,39 @@ public abstract class HoloGrande extends LinearOpMode {
         return angle;
     }
     //
+    public double fixAngle(double angle){
+        if(angle > 180){
+            angle -= 360;
+        }else if(angle < -180){
+            angle += 180;
+        }
+        return angle;
+    }
+    //
+    public boolean inBounds(double target, double error){
+        //
+        double rB = target + error;
+        double lB = target - error;
+        //
+        double a = getAngle();
+        //
+        if (fixAngle(rB) != rB || fixAngle(lB) != lB){
+            if ((lB < a && a < 180) || (-180 < a && a < rB)){
+                return true;
+            }else {
+                return false;
+            }
+        }else{
+            if (lB < getAngle() && getAngle() < rB){
+                return true;
+            }else {
+                return false;
+            }
+        }
+    }
+    //</editor-fold>
+    //
+    //<editor-fold desc="movement teleop">
     public void move(double x, double y, double factor){
         //
         double total = pythagorus(y, x);//find total power
@@ -196,15 +296,6 @@ public abstract class HoloGrande extends LinearOpMode {
         //
     }
     //
-    public double fixAngle(double angle){
-        if(angle > 180){
-            angle -= 360;
-        }else if(angle < -180){
-            angle += 180;
-        }
-        return angle;
-    }
-    //
     public double conformLeft(double origin){
         //
         return Math.floor((fixAngle(getAngle() - origin)) / 45) * 45;
@@ -213,28 +304,6 @@ public abstract class HoloGrande extends LinearOpMode {
     public double conformRight(double origin){
         //
         return Math.ceil((fixAngle(getAngle() - origin)) / 45) * 45;
-    }
-    //
-    public boolean inBounds(double target, double error){
-        //
-        double rB = target + error;
-        double lB = target - error;
-        //
-        double a = getAngle();
-        //
-        if (fixAngle(rB) != rB || fixAngle(lB) != lB){
-            if ((lB < a && a < 180) || (-180 < a && a < rB)){
-                return true;
-            }else {
-                return false;
-            }
-        }else{
-            if (lB < getAngle() && getAngle() < rB){
-                return true;
-            }else {
-                return false;
-            }
-        }
     }
     //
     public void turnRobot(double rx, double factor, double turnFactor){
@@ -250,6 +319,7 @@ public abstract class HoloGrande extends LinearOpMode {
         backLeft.setPower(0);
         backRight.setPower(0);
     }
+    //</editor-fold>
     //
     public void gear(){
         if (mediaPlayer == null) mediaPlayer = MediaPlayer.create(this.hardwareMap.appContext, R.raw.gear);
@@ -261,27 +331,5 @@ public abstract class HoloGrande extends LinearOpMode {
         if (mediaPlayer == null) mediaPlayer = MediaPlayer.create(this.hardwareMap.appContext, R.raw.dave);
         mediaPlayer.seekTo(0);
         mediaPlayer.start();
-    }
-    //
-    public void initGyro(){
-        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
-        parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
-        //parameters.calibrationDataFile = "GyroCal.json"; // see the calibration sample opmode
-        parameters.loggingEnabled      = true;
-        parameters.loggingTag          = "IMU";
-        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
-        //
-        imu = hardwareMap.get(BNO055IMU.class, "imu");
-        telemetry.addData("init imu","");
-        telemetry.update();
-        imu.initialize(parameters);
-        telemetry.addData("imu initiated", "");
-        telemetry.update();
-    }
-    //
-    public double getAngle(){
-        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        return -angles.firstAngle;
     }
 }

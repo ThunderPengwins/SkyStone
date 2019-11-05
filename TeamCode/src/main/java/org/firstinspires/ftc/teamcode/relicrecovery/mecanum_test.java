@@ -1,10 +1,13 @@
 package org.firstinspires.ftc.teamcode.relicrecovery;
 
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.relicrecoveryv2.HardwareSensorMap;
 
 /**
@@ -18,7 +21,12 @@ public class mecanum_test extends LinearOpMode {
     DcMotor rightRear;
     DcMotor leftFront;
     DcMotor rightFront;
+    ModernRoboticsI2cRangeSensor jeep;
+    Servo swivel;
     double drive; //turn power
+    //
+    double swiv;
+    boolean swiving = false;
     //
     JeffThePengwin jeffThePengwin;
     //
@@ -36,6 +44,8 @@ public class mecanum_test extends LinearOpMode {
         rightRear = hardwareMap.dcMotor.get("backright");
         leftFront = hardwareMap.dcMotor.get("frontleft");
         rightFront = hardwareMap.dcMotor.get("frontright");
+        jeep = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "jeep");
+        swivel = hardwareMap.servo.get("swivel");
         //
         rightRear.setDirection(DcMotorSimple.Direction.REVERSE);
         rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -48,9 +58,25 @@ public class mecanum_test extends LinearOpMode {
             turn = gamepad1.right_stick_x * 0.5; //right joystick left and right
             leftX = -gamepad1.left_stick_x * 0.5; //left joystick moving right and left
             //
+            if (!swiving && (gamepad1.dpad_left || gamepad1.dpad_right)){
+                swiving = true;
+                if (gamepad1.dpad_left){
+                    swiv -= .1;
+                }else {
+                    swiv += .1;
+                }
+            }else if (swiving && !gamepad1.dpad_left && !gamepad1.dpad_right){
+                swiving = false;
+            }
+            swivel.setPosition(swiv);
+            //
             figureOutMovementOfRobot();
             //
             moveTheRobot(turningRight, notTurning, movingVertical, strafingRight);
+            //
+            telemetry.addData("Jeep", jeep.getDistance(DistanceUnit.INCH));
+            telemetry.addData("swivel", swiv);
+            telemetry.update();
             //
         }
 
