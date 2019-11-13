@@ -1,9 +1,8 @@
 package org.firstinspires.ftc.teamcode.skystone;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DigitalChannel;
-import com.qualcomm.robotcore.hardware.Servo;
+
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 @TeleOp(name = "K2", group = "Sreal")
 public class K2 extends HoloLumi{
@@ -14,6 +13,8 @@ public class K2 extends HoloLumi{
     float leftx;
     float lefty;
     float rightx;
+    float otherlefty;
+    float otherrighty;
     //
     double powerFactor = 1.0;
     //
@@ -28,19 +29,19 @@ public class K2 extends HoloLumi{
     double origin = 0;
     Boolean orchosen = false;
     //
-    Servo grabber;
-    DcMotor lifter;
-    DcMotor extender;
-    DigitalChannel qbert;
-    DigitalChannel george;
-    //
     Float hold = 0F;
     Boolean holding = false;
     Double pos = 0.0;
     Boolean posing = false;
     Boolean test = false;
     //
+    final Double grabOpen = 0.7;
+    final Double grabClosed = 0.0;
+    //
     Integer pMode = 0;//
+    Integer task = 0;
+    Long taskTimer = 0L;
+    Long currentTime = 0L;
     /*
     0 = default,           allowed: movement, initiate pick up  color: blue
     1 = pick up,           allowed: movement, intake            color: orange
@@ -61,11 +62,8 @@ public class K2 extends HoloLumi{
     public void runOpMode() {
         //
         motorHardware();
-        grabber = hardwareMap.servo.get("grabber");
-        lifter = hardwareMap.dcMotor.get("lifter");
-        extender = hardwareMap.dcMotor.get("extender");
-        qbert = hardwareMap.digitalChannel.get("qbert");
-        george = hardwareMap.digitalChannel.get("george");
+        //
+        firstHarwares();
         //
         secondaryMotorReversals();
         //
@@ -77,9 +75,9 @@ public class K2 extends HoloLumi{
         //
         while (opModeIsActive()){
             //
-            if (gamepad1.a && !orchosen){
+            if (gamepad1.a){
                 origin = getAngle();
-                orchosen = true;
+                //orchosen = true;
             }
             //
             if (gamepad1.x){
@@ -90,51 +88,144 @@ public class K2 extends HoloLumi{
                 leftx = gamepad1.left_stick_x;
                 lefty = -gamepad1.left_stick_y;
                 rightx = gamepad1.right_stick_x;
+                otherlefty = -gamepad2.left_stick_y;
+                otherrighty = -gamepad2.right_stick_y;
             }else if (!planetary){
                 leftx = gamepad2.left_stick_x;
                 lefty = -gamepad2.left_stick_y;
                 rightx = gamepad2.right_stick_x;
+                otherlefty = -gamepad1.left_stick_y;
+                otherrighty = -gamepad1.right_stick_y;
             }
             //
             direction = fixAngle(getAngle() - origin);
             //
-            if(pMode == 0){
-                //
-                planetary = true;
+            currentTime = java.lang.System.currentTimeMillis();
+            if(pMode == 0){//default
                 //
                 movement();
+                mouse();
                 //
                 if (gamepad1.b){
                     pMode = 1;
+                    planetary = false;
                 }
-            }else if(pMode == 1){
+            }else if(pMode == 1){//pick up
                 //
-                planetary = false;
-                lifter.setPower(.1);
+                if (upity.getDistance(DistanceUnit.INCH) < 3.3){
+                    lifter.setPower(0.6);
+                }else if (upity.getDistance(DistanceUnit.INCH) > 4){
+                    lifter.setPower(-0.3);
+                }else {
+                    lifter.setPower(0);
+                }
                 //
                 movement();
+                mouse();
                 //
                 if (qbert.getState()){
                     pMode = 2;
+                    task = 1;
+                    still();
+                    lifter.setPower(-.3);
                 }
-            }else if (pMode == 2){
+            }else if (pMode == 2) {//process block
                 //
-                lifter.setPower(-.1);
-                //
-                if (george.getState()){
-                    pMode = 3;
-                    lifter.setPower(0);
+                if (task == 0) {//lifter buffer, disabled
+                    //
+                    if (george.getState()) {
+                        task++;
+                        taskTimer = currentTime;
+                        lifter.setPower(-.3);
+                    }
+                    //
+                }else if (task == 1){//lifter down
+                    //
+                    if (george.getState()){//(currentTime > taskTimer + 1000){
+                        lifter.setPower(0);
+                        task++;
+                        taskTimer = currentTime;
+                    }
+                    //
+                }else if (task == 2){//grab block
+                    //
+                    grabber.setPosition(grabClosed);//down
+                    task++;
+                    if (currentTime > taskTimer + 500){
+                        task++;
+                        lifter.setPower(0.6);
+                    }
+                }else if (task == 3){//lifter up
+                    //
+                    if (upity.getDistance(DistanceUnit.INCH) > 2.2){
+                        lifter.setPower(0);
+                        pMode = 3;
+                        planetary = true;
+                    }
                 }
-            }else if (pMode == 3){
                 //
-                planetary = true;
+            }else if (pMode == 3){//transport mode
+                //
+                movement();
+                mouse();
+                //
+                if (lifter.getPower() != 0){
+                    pMode = 4;
+                }
+                //
+            }else if (pMode == 4){//lifting mode
+                //
+                movement();
+                mouse();
+                //
+                if (!leftTouch.getState() || !rightTouch.getState()){//they're backwards
+                    pMode = 5;
+                }
+                //
+            }else if (pMode == 5){//engage to foundation
+                //
+                if (!leftTouch.getState()){
+                    frontRight.setPower(0.2);
+                    backRight.setPower(0.2);
+                }else{
+                    frontLeft.setPower(0.2);
+                    backLeft.setPower(0.2);
+                }
+                //
+                if (!leftTouch.getState() && !rightTouch.getState()){
+                    still();
+                    pMode = 6;
+                }
+                //
+            }else if (pMode == 6){//stacking blocks ->release, default
+                //
+                mouse();
+                //
+                if (gamepad2.left_bumper){
+                    move(-1, 0, .3);
+                }else if (gamepad2.right_bumper){
+                    move(1, 0, .3);
+                }else {
+                    still();
+                }
+                //
+                if (gamepad1.b){
+                    still();
+                    grabber.setPosition(grabOpen);
+                    pMode = 7;
+                }
+                //
+            }else if (pMode == 7){
                 //
                 movement();
                 //
-                mouse();
+                if (upity.getDistance(DistanceUnit.INCH) > 2.5){
+                    lifter.setPower(-.3);
+                }else {
+                    pMode = 0;
+                }
+                //
             }
-            //
-            mouse();
             //
             //<editor-fold desc="Motor Testing">
             /*if (gamepad1.dpad_up){
@@ -167,18 +258,20 @@ public class K2 extends HoloLumi{
             if (gamepad1.left_trigger > 0){
                 ma = true;
                 mT = conformLeft(origin);
-                mr = -0.5;
+                mr = -1;
             }else if (gamepad1.right_trigger > 0){
                 ma = true;
                 mT = conformRight(origin);
-                mr = 0.5;
+                mr = 1;
             }
             //
             //<editor-fold desc="telemetry">
             telemetry.update();
             telemetry.addData("mode", pMode);
+            telemetry.addData("task", task);
             telemetry.addData("Planetary?", planetary);
             telemetry.addData("conforming?", ma);
+            telemetry.addData("hieght of gantry", upity.getDistance(DistanceUnit.INCH));
             //telemetry.addData("local target angle", loctarang);
             //telemetry.addData("global target angle", glotarang);
             telemetry.addData("relative yaw", getAngle());
@@ -220,28 +313,31 @@ public class K2 extends HoloLumi{
     }
     //
     public void mouse(){
-        if (gamepad2.dpad_left && !posing){
-            pos -= .1;
-            posing = true;
-        }else if(gamepad2.dpad_right && ! posing){
-            pos += .1;
-            posing = true;
-        }else if (posing && (!gamepad2.dpad_right && !gamepad2.dpad_left)){
-            posing = false;
+        if (gamepad2.dpad_up){
+            grabber.setPosition(grabOpen);
+        }else if(gamepad2.dpad_down){
+            grabber.setPosition(grabClosed);
         }
-        grabber.setPosition(pos);
+        if (gamepad2.dpad_right){
+            leftHook.setPosition(0);
+            rightHook.setPosition(1);
+        }else if (gamepad2.dpad_left){
+            leftHook.setPosition(0.6);//0.3 is middle
+            rightHook.setPosition(0.4);
+        }
+        //rightHook.setPosition(pos);//disabled
         //
         if (gamepad2.left_bumper && holding){
             lifter.setPower(hold);
             telemetry.addData("lifter", hold);
         }else if (gamepad2.left_bumper && !holding){
-            hold = -gamepad2.left_stick_y;
+            hold = otherlefty;
             telemetry.addData("lifter", hold);
         }else{
-            lifter.setPower(-gamepad2.left_stick_y);
-            telemetry.addData("lifter", -gamepad2.left_stick_y);
+            lifter.setPower(otherlefty);
+            telemetry.addData("lifter", otherlefty);
         }
-        extender.setPower(-gamepad2.right_stick_y);
+        extender.setPower(otherrighty);
     }
     //
 }

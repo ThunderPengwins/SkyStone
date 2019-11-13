@@ -40,6 +40,8 @@ public abstract class HoloGrande extends LinearOpMode {
     DcMotor extender;
     DigitalChannel qbert;//cube in
     DigitalChannel george;//gantry down
+    DigitalChannel inTouch;
+    DigitalChannel outTouch;
     DistanceSensor upity;
     //
     Servo leftHook;
@@ -49,8 +51,12 @@ public abstract class HoloGrande extends LinearOpMode {
     ColorSensor leftColor;
     ColorSensor rightColor;
     //
-    DistanceSensor frontLeftD;
-    DistanceSensor frontRightD;
+    //DistanceSensor frontLeftD;
+    //DistanceSensor frontRightD;
+    DistanceSensor leftD;
+    DistanceSensor rightD;
+    DistanceSensor backD;
+    //
     //</editor-fold>
     //
     private static MediaPlayer mediaPlayer = null;
@@ -100,6 +106,9 @@ public abstract class HoloGrande extends LinearOpMode {
         extender = hardwareMap.dcMotor.get("extender");
         qbert = hardwareMap.digitalChannel.get("qbert");
         george = hardwareMap.digitalChannel.get("george");
+        inTouch = hardwareMap.digitalChannel.get("inTouch");
+        outTouch = hardwareMap.digitalChannel.get("outTouch");
+        //
         upity = hardwareMap.get(DistanceSensor.class, "upity");
         //
         leftHook = hardwareMap.servo.get("lefthook");
@@ -109,8 +118,14 @@ public abstract class HoloGrande extends LinearOpMode {
         leftColor = hardwareMap.colorSensor.get("leftcolor");
         rightColor = hardwareMap.colorSensor.get("rightcolor");
         //
-        frontLeftD = hardwareMap.get(DistanceSensor.class, "frontLeftCD");
-        frontRightD = hardwareMap.get(DistanceSensor.class, "frontRightCD");
+        //frontLeftD = hardwareMap.get(DistanceSensor.class, "frontLeftCD");
+        //frontRightD = hardwareMap.get(DistanceSensor.class, "frontRightCD");
+        leftD = hardwareMap.get(DistanceSensor.class, "leftD");
+        rightD = hardwareMap.get(DistanceSensor.class, "rightD");
+        //backD = hardwareMap.get(DistanceSensor.class, "backD");
+        qbert.setMode(DigitalChannel.Mode.INPUT);
+        george.setMode(DigitalChannel.Mode.INPUT);
+        //
     }
     //
     public void waitForStartify(){

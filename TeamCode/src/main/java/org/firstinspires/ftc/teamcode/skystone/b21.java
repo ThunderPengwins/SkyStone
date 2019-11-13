@@ -23,18 +23,26 @@ public class b21 extends HoloLumi {
         //
         while (opModeIsActive()){
             //
-            telemetry.addData("front left distance", frontLeftD.getDistance(DistanceUnit.INCH));
-            telemetry.addData("front right distance", frontRightD.getDistance(DistanceUnit.INCH));
-            telemetry.addData("left skystone?", leftColor.red() < 50);
-            telemetry.addData("right skystone?", rightColor.red() < 50);
+            extender.setPower(-gamepad2.right_stick_y);
+            //
+            //telemetry.addData("front left distance", frontLeftD.getDistance(DistanceUnit.INCH));
+            //telemetry.addData("front right distance", frontRightD.getDistance(DistanceUnit.INCH));
+            telemetry.addData("left skystone?", leftColor.red());
+            telemetry.addData("right skystone?", rightColor.red());
             telemetry.addData("grabber", grabber.getPosition());
             telemetry.addData("upity", upity.getDistance(DistanceUnit.INCH));
             telemetry.addData("left hook", leftHook.getPosition());
             telemetry.addData("right hook", rightHook.getPosition());
+            telemetry.addData("left distance", leftD.getDistance(DistanceUnit.INCH));
+            telemetry.addData("right distance", rightD.getDistance(DistanceUnit.INCH));
+            //telemetry.addData("back distance", backD.getDistance(DistanceUnit.INCH));
             telemetry.addData("qbert", qbert.getState());
             telemetry.addData("george", george.getState());
+            telemetry.addData("in", inTouch.getState());
+            telemetry.addData("out", outTouch.getState());
             telemetry.addData("left touch", leftTouch.getState());
             telemetry.addData("right touch", rightTouch.getState());
+            telemetry.addData("Issue", "CAD");
             telemetry.update();
             //
         }
