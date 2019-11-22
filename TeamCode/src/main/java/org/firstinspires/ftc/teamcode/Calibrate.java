@@ -14,7 +14,7 @@ public class Calibrate extends LinearOpMode {
     DcMotor backright;
     //Calculate encoder conversion
     Integer cpr = 28; //counts per rotation
-    Integer gearratio = 40;
+    Integer gearratio = 20;
     Double diameter = 4.125;
     Double cpi = (cpr * gearratio) / (Math.PI * diameter); //counts per inch -> counts per rotation / circumference
     Double bias = 0.8;//adjust until your robot goes 20 inches

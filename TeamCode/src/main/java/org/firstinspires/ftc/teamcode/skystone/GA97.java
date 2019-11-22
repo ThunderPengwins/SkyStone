@@ -23,7 +23,7 @@ public class GA97 extends LinearOpMode {
     //28 * 20 / (2ppi * 4.125)
     Double width = 16.0; //inches
     Integer cpr = 28; //counts per rotation
-    double gearratio = 40;
+    double gearratio = 20;
     Double diameter = 4.125;
     Double cpi = (cpr * gearratio)/(Math.PI * diameter); //counts per inch, 28cpr * gear ratio / (2 * pi * diameter (in inches, in the center))
     Double bias = 0.714;

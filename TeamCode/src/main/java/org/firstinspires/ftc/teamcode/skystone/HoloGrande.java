@@ -16,6 +16,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.teamcode.R;
 
@@ -55,7 +56,24 @@ public abstract class HoloGrande extends LinearOpMode {
     //DistanceSensor frontRightD;
     DistanceSensor leftD;
     DistanceSensor rightD;
-    DistanceSensor backD;
+    DistanceSensor leftR;
+    DistanceSensor rightR;
+    DistanceSensor backR;
+    //
+    Integer cpr = 28; //counts per rotation
+    double gearratio = 20;
+    Double diameter = 4.125;
+    Double cpi = (cpr * gearratio)/(Math.PI * diameter); //counts per inch, 28cpr * gear ratio / (2 * pi * diameter (in inches, in the center))
+    Double bias = 0.8;
+    //
+    Double conversion = cpi * bias;
+    //
+    final Double grabOpen = 0.7;
+    final Double grabClosed = 0.0;
+    final Double hookUpLeft = 0.6;
+    final Double hookDownLeft = 0.0;
+    final Double hookUpRight = 0.4;
+    final Double hookDownRight = 1.0;
     //
     //</editor-fold>
     //
@@ -122,9 +140,13 @@ public abstract class HoloGrande extends LinearOpMode {
         //frontRightD = hardwareMap.get(DistanceSensor.class, "frontRightCD");
         leftD = hardwareMap.get(DistanceSensor.class, "leftD");
         rightD = hardwareMap.get(DistanceSensor.class, "rightD");
-        //backD = hardwareMap.get(DistanceSensor.class, "backD");
+        leftR = hardwareMap.get(DistanceSensor.class, "leftR");
+        rightR = hardwareMap.get(DistanceSensor.class,"rightR");
+        backR = hardwareMap.get(DistanceSensor.class, "backR");
         qbert.setMode(DigitalChannel.Mode.INPUT);
         george.setMode(DigitalChannel.Mode.INPUT);
+        //
+        //extender.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         //
     }
     //
@@ -175,7 +197,7 @@ public abstract class HoloGrande extends LinearOpMode {
         if(angle > 180){
             angle -= 360;
         }else if(angle < -180){
-            angle += 180;
+            angle += 360;
         }
         return angle;
     }
@@ -203,10 +225,259 @@ public abstract class HoloGrande extends LinearOpMode {
     }
     //</editor-fold>
     //
+    public void forward(double left, double right){
+        frontRight.setPower(right);
+        backLeft.setPower(left);
+        frontLeft.setPower(left);
+        backRight.setPower(right);//set motor powers
+    }
+    //
+    public void turnWithGyro(double degrees, double speedDirection){
+        //<editor-fold desc="Initialize">
+        angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        double yaw = -angles.firstAngle;//make this negative
+        telemetry.addData("Speed Direction", speedDirection);
+        telemetry.addData("Yaw", yaw);
+        telemetry.update();
+        //
+        telemetry.addData("stuff", speedDirection);
+        telemetry.update();
+        //
+        double first;
+        double second;
+        //</editor-fold>
+        //
+        if (speedDirection > 0){//set target positions
+            //<editor-fold desc="turn right">
+            if (degrees > 10){
+                first = (degrees - 10) + devertify(yaw);
+                second = degrees + devertify(yaw);
+            }else{
+                first = devertify(yaw);
+                second = degrees + devertify(yaw);
+            }
+            //</editor-fold>
+        }else{
+            //<editor-fold desc="turn left">
+            if (degrees > 10){
+                first = devertify(-(degrees - 10) + devertify(yaw));
+                second = devertify(-degrees + devertify(yaw));
+            }else{
+                first = devertify(yaw);
+                second = devertify(-degrees + devertify(yaw));
+            }
+            //
+            //</editor-fold>
+        }
+        //
+        //<editor-fold desc="Go to position">
+        Double firsta = convertify(first - 5);//175
+        Double firstb = convertify(first + 5);//-175
+        //
+        turnWithEncoder(speedDirection);
+        //
+        if (Math.abs(firsta - firstb) < 11) {
+            while (!(firsta < yaw && yaw < firstb) && opModeIsActive()) {//within range?
+                angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+                gravity = imu.getGravity();
+                yaw = -angles.firstAngle;
+                telemetry.addData("Position", yaw);
+                telemetry.addData("first before", first);
+                telemetry.addData("first after", convertify(first));
+                telemetry.update();
+            }
+        }else{
+            //
+            while (!((firsta < yaw && yaw < 180) || (-180 < yaw && yaw < firstb)) && opModeIsActive()) {//within range?
+                angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+                gravity = imu.getGravity();
+                yaw = -angles.firstAngle;
+                telemetry.addData("Position", yaw);
+                telemetry.addData("first before", first);
+                telemetry.addData("first after", convertify(first));
+                telemetry.update();
+            }
+        }
+        //
+        Double seconda = convertify(second - 5);//175
+        Double secondb = convertify(second + 5);//-175
+        //
+        turnWithEncoder(speedDirection / 3);
+        //
+        if (Math.abs(seconda - secondb) < 11) {
+            while (!(seconda < yaw && yaw < secondb) && opModeIsActive()) {//within range?
+                angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+                gravity = imu.getGravity();
+                yaw = -angles.firstAngle;
+                telemetry.addData("Position", yaw);
+                telemetry.addData("second before", second);
+                telemetry.addData("second after", convertify(second));
+                telemetry.update();
+            }
+            while (!((seconda < yaw && yaw < 180) || (-180 < yaw && yaw < secondb)) && opModeIsActive()) {//within range?
+                angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+                gravity = imu.getGravity();
+                yaw = -angles.firstAngle;
+                telemetry.addData("Position", yaw);
+                telemetry.addData("second before", second);
+                telemetry.addData("second after", convertify(second));
+                telemetry.update();
+            }
+            frontLeft.setPower(0);
+            frontRight.setPower(0);
+            backLeft.setPower(0);
+            backRight.setPower(0);
+        }
+        //</editor-fold>
+        //
+        frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    }
+    public double devertify(double degrees){
+        if (degrees < 0){
+            degrees = degrees + 360;
+        }
+        return degrees;
+    }
+    public double convertify(double degrees){
+        if (degrees > 179){
+            degrees = -(360 - degrees);
+        } else if(degrees < -180){
+            degrees = 360 + degrees;
+        } else if(degrees > 360){
+            degrees = degrees - 360;
+        }
+        return degrees;
+    }
+    public void turnWithEncoder(double input){
+        frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //
+        frontLeft.setPower(input);
+        backLeft.setPower(input);
+        frontRight.setPower(-input);
+        backRight.setPower(-input);
+    }
+    //
+    public void turnToAngle(double angle, double speed){
+        //
+        if (getAngle() > angle){
+            turnWithEncoder(-speed);
+        }else{
+            turnWithEncoder(speed);
+        }
+        //
+        while (!(angle - 3 < getAngle() && getAngle() < angle + 3)){}
+        still();
+        //
+    }
+    //
+    public void moveToPosition(double inches, double speed, boolean bridge){
+        //
+        int move = (int)(Math.round(inches*conversion));
+        //
+        backLeft.setTargetPosition(backLeft.getCurrentPosition() + move);
+        frontLeft.setTargetPosition(frontLeft.getCurrentPosition() + move);
+        backRight.setTargetPosition(backRight.getCurrentPosition() + move);
+        frontRight.setTargetPosition(frontRight.getCurrentPosition() + move);
+        //
+        frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        frontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        //
+        frontLeft.setPower(speed);
+        backLeft.setPower(speed);
+        frontRight.setPower(speed);
+        backRight.setPower(speed);
+        //
+        while (frontLeft.isBusy() && frontRight.isBusy() && backLeft.isBusy() && backRight.isBusy() && opModeIsActive()){}
+        if (!bridge) {
+            frontRight.setPower(0);
+            frontLeft.setPower(0);
+            backRight.setPower(0);
+            backLeft.setPower(0);
+        }
+        return;
+    }
+    //
+    public void strafeToPosition(double inches, double speed, boolean bridge){
+        //
+        int move = (int)(Math.round(inches*conversion));
+        //
+        backLeft.setTargetPosition(backLeft.getCurrentPosition() - move);
+        frontLeft.setTargetPosition(frontLeft.getCurrentPosition() + move);
+        backRight.setTargetPosition(backRight.getCurrentPosition() + move);
+        frontRight.setTargetPosition(frontRight.getCurrentPosition() - move);
+        //
+        frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        frontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        //
+        frontLeft.setPower(speed);
+        backLeft.setPower(-speed);
+        frontRight.setPower(-speed);
+        backRight.setPower(speed);
+        //
+        while (frontLeft.isBusy() && frontRight.isBusy() && backLeft.isBusy() && backRight.isBusy() && opModeIsActive()){}
+        if (!bridge) {
+            frontRight.setPower(0);
+            frontLeft.setPower(0);
+            backRight.setPower(0);
+            backLeft.setPower(0);
+        }
+        return;
+    }
+    //
+    public void moveToAndGantry(double inches, double speed, boolean bridge){
+        //
+        int move = (int)(Math.round(inches*conversion));
+        //
+        backLeft.setTargetPosition(backLeft.getCurrentPosition() + move);
+        frontLeft.setTargetPosition(frontLeft.getCurrentPosition() + move);
+        backRight.setTargetPosition(backRight.getCurrentPosition() + move);
+        frontRight.setTargetPosition(frontRight.getCurrentPosition() + move);
+        //
+        frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        frontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        //
+        frontLeft.setPower(speed);
+        backLeft.setPower(speed);
+        frontRight.setPower(speed);
+        backRight.setPower(speed);
+        //
+        while (frontLeft.isBusy() && frontRight.isBusy() && backLeft.isBusy() && backRight.isBusy() && opModeIsActive()){
+            if (upity.getDistance(DistanceUnit.INCH) < 3.3){
+                lifter.setPower(0.4);
+            }else if (upity.getDistance(DistanceUnit.INCH) > 4){
+                lifter.setPower(-0.4);
+                extender.setPower(-.3);
+            }else {
+                lifter.setPower(0);
+                extender.setPower(0);
+            }
+        }
+        if (!bridge) {
+            frontRight.setPower(0);
+            frontLeft.setPower(0);
+            backRight.setPower(0);
+            backLeft.setPower(0);
+        }
+        return;
+    }
+    //
     //<editor-fold desc="movement teleop">
     public void move(double x, double y, double factor){
         //
-        double total = pythagorus(y, x);//find total power
+        //double total = pythagorus(y, x);//find total power
+        double total = 1;
         //
         double angle = calcHoloAngle(x, y, total);//calculate angle of joystick
         //
@@ -220,6 +491,8 @@ public abstract class HoloGrande extends LinearOpMode {
         backLeft.setPower(bWheelsPower * total * factor);
         frontLeft.setPower(aWheelsPower * total * factor);
         backRight.setPower(aWheelsPower * total * factor);//set motor powers
+        //
+        telemetry.addData("front right set",bWheelsPower * total * factor + ", get: " + frontRight);
     }
     //
     public void moveTurn(double x, double y, double t, double factor, double turnFactor, double ayaw) {
@@ -242,7 +515,9 @@ public abstract class HoloGrande extends LinearOpMode {
         } else {
             double angle = calcHoloAngle(x, y, total);//calculate angle of joystick
             //
-            angle += cyaw - ayaw;
+            double calc = cyaw - ayaw;
+            calc = fixAngle(calc);
+            angle += calc;
             //
             aWheelsPower = Math.cos(angle * Math.PI / 180);//front left & back right
             bWheelsPower = Math.sin(angle * Math.PI / 180);//front right & back left
