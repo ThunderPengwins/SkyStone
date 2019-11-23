@@ -105,6 +105,7 @@ public class K2 extends HoloLumi{
                 lifter.setPower(0);
                 extender.setPower(0);
                 still();
+                planetary = true;
                 leftHook.setPosition(hookUpLeft);
                 rightHook.setPosition(hookUpRight);
             }
