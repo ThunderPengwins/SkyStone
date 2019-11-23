@@ -26,6 +26,8 @@ public class HK47a extends HoloLumi {
         leftColor.enableLed(false);
         rightColor.enableLed(false);
         //
+        double origin = getAngle();
+        //
         waitForStartify();
         //
         leftHook.setPosition(hookUpLeft);//0 is down, 0.6 is up
@@ -94,7 +96,7 @@ public class HK47a extends HoloLumi {
         sleep(500);
         //
         motorsWithEncoders();
-        move(0, 2, .4);
+        move(0, 2, .4);//charge (to stone)
         while (!(qbert.getState()) && opModeIsActive() && !(backR.getDistance(DistanceUnit.INCH) > 60)) {
             if (upity.getDistance(DistanceUnit.INCH) < 3.3){
                 lifter.setPower(0.4);
@@ -107,37 +109,37 @@ public class HK47a extends HoloLumi {
             }
         }
         still();
-        if (backR.getDistance(DistanceUnit.INCH) > 60){
+        if (backR.getDistance(DistanceUnit.INCH) > 60){//safety
             return;
         }
         //
-        lifter.setPower(-.4);
+        lifter.setPower(-.4);//gantry down to stone
         while (!george.getState() && opModeIsActive()){}
         lifter.setPower(0);
         //
-        grabber.setPosition(grabClosed);
+        grabber.setPosition(grabClosed);//grab it
         //
         sleep(500);
         //
-        lifter.setPower(0.6);
-        //
+        lifter.setPower(0.4);//gantry up
         while (!(upity.getDistance(DistanceUnit.INCH) > 2.2) && opModeIsActive()){}
         lifter.setPower(0);
         //
         leftHook.setPosition(hookUpLeft);
         //
-        motorsWithEncoders();
+        motorsWithEncoders();//back up
         move(0, -1, .4);
         while (!(backR.getDistance(DistanceUnit.INCH) < 28) && opModeIsActive()) {}
         still();
         //
         sleep(200);
         //
-        strafeToPosition(55, .7, true);
-        turnToAngle(0,.2);
+        strafeToPosition(55, .7, true);//go under bridge
+        //
+        turnToAngle(0,.07);//correct
         //
         motorsWithEncoders();
-        move(1, 0, .4);
+        move(1, 0, .4);//go to foundation
         while (!(rightR.getDistance(DistanceUnit.INCH) < 17) && opModeIsActive()) {
             if (upity.getDistance(DistanceUnit.INCH) < 6){
                 lifter.setPower(0.4);
@@ -167,55 +169,61 @@ public class HK47a extends HoloLumi {
         rightHook.setPosition(hookDownRight);
         sleep(500);
         move(0,-1,.3);
+        extender.setPower(-.7);
         while (!(backR.getDistance(DistanceUnit.INCH) < 8) && opModeIsActive()) {
             if (upity.getDistance(DistanceUnit.INCH) < 3.3){
                 lifter.setPower(0.4);
             }else if (upity.getDistance(DistanceUnit.INCH) > 4){
                 lifter.setPower(-0.4);
-                extender.setPower(-.3);
             }else {
                 lifter.setPower(0);
-                extender.setPower(0);
             }
         }
         still();
+        lifter.setPower(0);
         leftHook.setPosition(hookUpLeft);
         rightHook.setPosition(hookUpRight);
         sleep(200);
         //
-        turnToAngle(0, .2);
+        turnToAngle(0, .07);
         //
-        move(-1,0,.5);
-        extender.setPower(-.2);
-        while ((rightR.getDistance(DistanceUnit.INCH) < 33) && opModeIsActive()) {
+        move(-1,0,.5);//
+        while (!(rightR.getDistance(DistanceUnit.INCH) > 33) && opModeIsActive()) {
             telemetry.addData("right range", rightR.getDistance(DistanceUnit.INCH));
             telemetry.update();
         }
         still();
+        extender.setPower(0);
         //
         sleep(200);//200
         //
-        //turnToAngle(0,.2);
+        turnToAngle(0,.07);
         //
         move(0,1,.6);
-        extender.setPower(-.3);
         while (!(backR.getDistance(DistanceUnit.INCH) > 40) && opModeIsActive()) {}
         still();
-        extender.setPower(0);
         //
-        turnToAngle(180, .4);
+        turnWithGyro(170, .3);
         //
-        move(-1,0,.3);
-        while (!(leftR.getDistance(DistanceUnit.INCH) < 11) && opModeIsActive()) {
+        telemetry.addData("begin","move");
+        telemetry.update();
+        //
+        motorsWithEncoders();
+        move(-1,0,.6);
+        while (!(leftR.getDistance(DistanceUnit.INCH) < 15) && opModeIsActive()) {
             telemetry.addData("working", leftR.getDistance(DistanceUnit.INCH));
             telemetry.update();
         }
         still();
         //
-        sleep(200);
+        telemetry.addData("done","move");
+        telemetry.update();
         //
-        moveToPosition(20, .3, true);
+        sleep(100);
         //
+        moveToPosition(30, .5, true);
+        //
+        strafeToPosition(40, .8, false);
     }
     //
 }
