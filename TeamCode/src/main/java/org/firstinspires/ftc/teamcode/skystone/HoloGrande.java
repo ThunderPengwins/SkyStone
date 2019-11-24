@@ -225,6 +225,15 @@ public abstract class HoloGrande extends LinearOpMode {
     }
     //</editor-fold>
     //
+    boolean isDouble(String str) {
+        try {
+            Double.parseDouble(str);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+    //
     public void forward(double left, double right){
         frontRight.setPower(right);
         backLeft.setPower(left);

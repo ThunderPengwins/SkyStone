@@ -4,8 +4,8 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
-@Autonomous(name = "HK47-all", group = "Sreal")
-public class HK47a extends HoloLumi {
+@Autonomous(name = "HK47-stone-red", group = "Sreal")
+public class HK47sr extends HoloLumi {
     //
     Double gap1 = 0.0;//2.0
     //
@@ -96,9 +96,9 @@ public class HK47a extends HoloLumi {
         sleep(500);
         //
         motorsWithEncoders();
-        move(0, 2, .4);//charge (to stone)
+        move(0, 1, .4);//charge (to stone)
         while (!(qbert.getState()) && opModeIsActive() && !(backR.getDistance(DistanceUnit.INCH) > 60)) {
-            if (upity.getDistance(DistanceUnit.INCH) < 3.3){
+            if (upity.getDistance(DistanceUnit.INCH) < 3.5){
                 lifter.setPower(0.4);
             }else if (upity.getDistance(DistanceUnit.INCH) > 4){
                 lifter.setPower(-0.4);
@@ -109,13 +109,20 @@ public class HK47a extends HoloLumi {
             }
         }
         still();
+        boolean fail = false;
         if (backR.getDistance(DistanceUnit.INCH) > 60){//safety
-            return;
+            fail = true;
         }
         //
         lifter.setPower(-.4);//gantry down to stone
-        while (!george.getState() && opModeIsActive()){}
+        while (!george.getState() && opModeIsActive() && !fail){}
         lifter.setPower(0);
+        //
+        if (fail){
+            lifter.setPower(-.4);
+            while (!(upity.getDistance(DistanceUnit.INCH) < 2.2)){}
+            lifter.setPower(0);
+        }
         //
         grabber.setPosition(grabClosed);//grab it
         //
@@ -136,94 +143,11 @@ public class HK47a extends HoloLumi {
         //
         strafeToPosition(55, .7, true);//go under bridge
         //
-        turnToAngle(0,.07);//correct
-        //
-        motorsWithEncoders();
-        move(1, 0, .4);//go to foundation
-        while (!(rightR.getDistance(DistanceUnit.INCH) < 17) && opModeIsActive()) {
-            if (upity.getDistance(DistanceUnit.INCH) < 6){
-                lifter.setPower(0.4);
-            }else if (upity.getDistance(DistanceUnit.INCH) > 10){
-                lifter.setPower(-0.4);
-                extender.setPower(-.3);
-            }else {
-                lifter.setPower(0);
-                extender.setPower(0);
-            }
-        }
-        still();
-        sleep(200);
-        //
-        move(0,1,.2);
-        extender.setPower(1.0);
-        while ((leftTouch.getState() || rightTouch.getState()) && opModeIsActive()) {}
-        still();
-        //
-        sleep(1000);
-        //
-        extender.setPower(0);
+        turnWithGyro(90, .3);
         //
         grabber.setPosition(grabOpen);
         //
-        leftHook.setPosition(hookDownLeft);
-        rightHook.setPosition(hookDownRight);
-        sleep(500);
-        move(0,-1,.3);
-        extender.setPower(-.7);
-        while (!(backR.getDistance(DistanceUnit.INCH) < 8) && opModeIsActive()) {
-            if (upity.getDistance(DistanceUnit.INCH) < 3.3){
-                lifter.setPower(0.4);
-            }else if (upity.getDistance(DistanceUnit.INCH) > 4){
-                lifter.setPower(-0.4);
-            }else {
-                lifter.setPower(0);
-            }
-        }
-        still();
-        lifter.setPower(0);
-        leftHook.setPosition(hookUpLeft);
-        rightHook.setPosition(hookUpRight);
-        sleep(200);
-        //
-        turnToAngle(0, .07);
-        //
-        move(-1,0,.5);//
-        while (!(rightR.getDistance(DistanceUnit.INCH) > 33) && opModeIsActive()) {
-            telemetry.addData("right range", rightR.getDistance(DistanceUnit.INCH));
-            telemetry.update();
-        }
-        still();
-        extender.setPower(0);
-        //
-        sleep(200);//200
-        //
-        turnToAngle(0,.07);
-        //
-        move(0,1,.6);
-        while (!(backR.getDistance(DistanceUnit.INCH) > 40) && opModeIsActive()) {}
-        still();
-        //
-        turnWithGyro(170, .3);
-        //
-        telemetry.addData("begin","move");
-        telemetry.update();
-        //
-        motorsWithEncoders();
-        move(-1,0,.6);
-        while (!(leftR.getDistance(DistanceUnit.INCH) < 15) && opModeIsActive()) {
-            telemetry.addData("working", leftR.getDistance(DistanceUnit.INCH));
-            telemetry.update();
-        }
-        still();
-        //
-        telemetry.addData("done","move");
-        telemetry.update();
-        //
-        sleep(100);
-        //
-        moveToPosition(30, .5, true);
-        //
-        strafeToPosition(40, .8, false);
+        moveToPosition(-17,.4,false);
     }
     //
 }
