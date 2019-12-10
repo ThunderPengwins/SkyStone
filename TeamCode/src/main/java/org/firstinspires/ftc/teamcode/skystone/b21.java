@@ -22,6 +22,7 @@ public class b21 extends HoloLumi {
         waitForStartify();
         //
         leftColor.enableLed(false);
+        rightColor.enableLed(true);
         //
         while (opModeIsActive()){
             //
@@ -29,7 +30,8 @@ public class b21 extends HoloLumi {
             //
             //telemetry.addData("front left distance", frontLeftD.getDistance(DistanceUnit.INCH));
             //telemetry.addData("front right distance", frontRightD.getDistance(DistanceUnit.INCH));
-            telemetry.addData("red", leftColor.red() + ", green: " + leftColor.green() + ", blue: " + leftColor.blue() + ", argb: " + leftColor.argb());
+            telemetry.addData("left red", leftColor.red() + ", green: " + leftColor.green() + ", blue: " + leftColor.blue() + ", argb: " + leftColor.argb());
+            telemetry.addData("right red", rightColor.red() + ", green: " + rightColor.green() + ", blue: " + rightColor.blue() + ", argb: " + rightColor.argb());
             telemetry.addData("right skystone?", rightColor.red());
             telemetry.addData("grabber", grabber.getPosition());
             telemetry.addData("upity", upity.getDistance(DistanceUnit.INCH));
@@ -45,9 +47,10 @@ public class b21 extends HoloLumi {
             telemetry.addData("george", george.getState());
             telemetry.addData("in", inTouch.getState());
             telemetry.addData("out", outTouch.getState());
+            telemetry.addData("up",upTouch.getState());
             telemetry.addData("left touch", leftTouch.getState());
             telemetry.addData("right touch", rightTouch.getState());
-            telemetry.addData("Issue", "CAD");
+            telemetry.addData("Issue", "NextGen");
             telemetry.update();
             //
         }

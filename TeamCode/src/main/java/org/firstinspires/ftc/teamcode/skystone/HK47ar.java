@@ -30,6 +30,7 @@ public class HK47ar extends HoloLumi {
         //
         waitForStartify();
         //
+        //<editor-fold desc="Identify Skystone">
         leftHook.setPosition(hookUpLeft);//0 is down, 0.6 is up
         rightHook.setPosition(hookUpRight);//0 is down, 0.6 is up
         //
@@ -37,7 +38,7 @@ public class HK47ar extends HoloLumi {
         //
         //forward(.5, .5);
         //
-        moveToPosition(25 + gap1, .3, true);//24
+        moveToPosition(26 + gap1, .3, true);//24.5
         //moveToPosition(4, .2, false);
         //
         //while (!(backR.getDistance(DistanceUnit.INCH) > 15 + gap1) && opModeIsActive()){ };
@@ -50,42 +51,20 @@ public class HK47ar extends HoloLumi {
         telemetry.update();
         //
         Integer position = 0;
-        //
-        motorsWithEncoders();
-        move(-1,0,.4);
-        while (!(leftR.getDistance(DistanceUnit.INCH) < 39) && opModeIsActive()){
-            telemetry.addData("distance", leftR.getDistance(DistanceUnit.INCH));
-            telemetry.addData("left front motor", frontLeft.getPower());
-            telemetry.update();
-        }
+        moveWithSensor("left",39.0,true,.4,-1.0,0.0,false);
         //
         if (leftColor.red() == 0){
             position = 1;
             still();
         }else {
-            motorsWithEncoders();
-            move(-1,0,.4);
-            while (!(leftR.getDistance(DistanceUnit.INCH) < 32) && opModeIsActive()){
-                telemetry.addData("distance", leftR.getDistance(DistanceUnit.INCH));
-                telemetry.addData("left front motor", frontLeft.getPower());
-                telemetry.update();
-            }
+            moveWithSensor("left",32.0,true,.4,-1.0,0.0,false);
             //
             if (leftColor.red() == 0) {
                 position = 2;
                 still();
             }else {
                 position = 3;
-                //
-                motorsWithEncoders();
-                move(-1, 0, .4);
-                while (!(leftR.getDistance(DistanceUnit.INCH) < 25) && opModeIsActive()) {
-                    telemetry.addData("distance", leftR.getDistance(DistanceUnit.INCH));
-                    telemetry.addData("left front motor", frontLeft.getPower());
-                    telemetry.update();
-                }
-                still();
-                //
+                moveWithSensor("left",25.0,true,.4,-1.0,0.0,true);
             }
         }
         //
@@ -133,21 +112,25 @@ public class HK47ar extends HoloLumi {
         lifter.setPower(0);
         //
         leftHook.setPosition(hookUpLeft);
-        //
-        motorsWithEncoders();//back up
-        move(0, -1, .4);
-        while (!(backR.getDistance(DistanceUnit.INCH) < 28) && opModeIsActive()) {}
-        still();
+        //back up
+        moveWithSensor("back",28.0,true,0.4,0.0,-1.0,true);//
+        //</editor-fold>
         //
         sleep(200);
+        //
+        turnToAngle(0,.07);//premature correct
         //
         strafeToPosition(55, .7, true);//go under bridge
         //
         turnToAngle(0,.07);//correct
         //
+        double distanceHold = rightR.getDistance(DistanceUnit.INCH);
         motorsWithEncoders();
         move(1, 0, .4);//go to foundation
-        while (!(rightR.getDistance(DistanceUnit.INCH) < 17) && opModeIsActive()) {
+        while (!(distanceHold < 17) && opModeIsActive()) {
+            if (Math.abs(rightR.getDistance(DistanceUnit.INCH) - distanceHold) < 20 && rightR.getDistance(DistanceUnit.INCH) < 500) {
+                distanceHold = rightR.getDistance(DistanceUnit.INCH);
+            }
             if (upity.getDistance(DistanceUnit.INCH) < 6){
                 lifter.setPower(0.4);
             }else if (upity.getDistance(DistanceUnit.INCH) > 10){
@@ -157,6 +140,12 @@ public class HK47ar extends HoloLumi {
                 lifter.setPower(0);
                 extender.setPower(0);
             }
+            if (Math.abs(rightR.getDistance(DistanceUnit.INCH) - distanceHold) < 20 && rightR.getDistance(DistanceUnit.INCH) < 500) {
+                distanceHold = rightR.getDistance(DistanceUnit.INCH);
+            }
+            telemetry.addData("rightR", rightR.getDistance(DistanceUnit.INCH));
+            telemetry.addData("used", distanceHold);
+            telemetry.update();
         }
         still();
         sleep(200);
@@ -179,7 +168,6 @@ public class HK47ar extends HoloLumi {
         //
         sleep(500);
         //
-        double distanceHold = backR.getDistance(DistanceUnit.INCH);
         int counter = 0;
         move(0,-1,.3);//pull back
         extender.setPower(-.7);
@@ -233,8 +221,13 @@ public class HK47ar extends HoloLumi {
         telemetry.update();
         turnToAngle(0,.07);
         //
+        distanceHold = backR.getDistance(DistanceUnit.INCH);
         move(0,1,.6);//go forward
-        while (!(backR.getDistance(DistanceUnit.INCH) > 40) && opModeIsActive()) {}
+        while (!(distanceHold > 40) && opModeIsActive()) {
+            if (Math.abs(backR.getDistance(DistanceUnit.INCH) - distanceHold) < 20 && backR.getDistance(DistanceUnit.INCH) < 500){
+                distanceHold = backR.getDistance(DistanceUnit.INCH);
+            }
+        }
         still();
         //
         turnWithGyro(170, .3);

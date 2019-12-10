@@ -151,8 +151,10 @@ public class HK47sb extends HoloLumi {
         //
         if (position == 3) {
             strafeToPosition(-65, .7, true);
-        } else{
+        } else if(position == 2){
             strafeToPosition(-55, .7, true);//go under bridge
+        }else{
+            strafeToPosition(-45, .7, true);
         }
         //
         turnWithGyro(90, -.3);

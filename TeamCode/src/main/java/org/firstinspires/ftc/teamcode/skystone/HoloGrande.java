@@ -43,6 +43,7 @@ public abstract class HoloGrande extends LinearOpMode {
     DigitalChannel george;//gantry down
     DigitalChannel inTouch;
     DigitalChannel outTouch;
+    DigitalChannel upTouch;
     DistanceSensor upity;
     //
     Servo leftHook;
@@ -126,6 +127,7 @@ public abstract class HoloGrande extends LinearOpMode {
         george = hardwareMap.digitalChannel.get("george");
         inTouch = hardwareMap.digitalChannel.get("inTouch");
         outTouch = hardwareMap.digitalChannel.get("outTouch");
+        upTouch = hardwareMap.digitalChannel.get("upTouch");
         //
         upity = hardwareMap.get(DistanceSensor.class, "upity");
         //
@@ -225,6 +227,7 @@ public abstract class HoloGrande extends LinearOpMode {
     }
     //</editor-fold>
     //
+    //<editor-fold desc="auto">
     boolean isDouble(String str) {
         try {
             Double.parseDouble(str);
@@ -239,6 +242,91 @@ public abstract class HoloGrande extends LinearOpMode {
         backLeft.setPower(left);
         frontLeft.setPower(left);
         backRight.setPower(right);//set motor powers
+    }
+    //
+    public void moveWithSensor(String sensor, Double distance, Boolean towards, Double speed, Double x, Double y, Boolean stop){
+        //
+        int moveCap = 20;
+        int highCap = 500;
+        //
+        motorsWithEncoders();
+        double distanceHold;
+        if (sensor.equals("left")){
+            distanceHold = leftR.getDistance(DistanceUnit.INCH);
+            move(x,y,speed);
+            if (towards) {
+                while (!(distanceHold < distance) && opModeIsActive()) {
+                    if (Math.abs(leftR.getDistance(DistanceUnit.INCH) - distanceHold) < moveCap && leftR.getDistance(DistanceUnit.INCH) < highCap) {
+                        distanceHold = leftR.getDistance(DistanceUnit.INCH);
+                    }
+                    telemetry.addData("leftR", leftR.getDistance(DistanceUnit.INCH));
+                    telemetry.addData("used", distanceHold);
+                    telemetry.update();
+                }
+            }else{
+                while (!(distanceHold > distance) && opModeIsActive()) {
+                    if (Math.abs(leftR.getDistance(DistanceUnit.INCH) - distanceHold) < moveCap && leftR.getDistance(DistanceUnit.INCH) < highCap) {
+                        distanceHold = leftR.getDistance(DistanceUnit.INCH);
+                    }
+                    telemetry.addData("leftR", leftR.getDistance(DistanceUnit.INCH));
+                    telemetry.addData("used", distanceHold);
+                    telemetry.update();
+                }
+            }
+        }else if (sensor.equals("right")){
+            distanceHold = rightR.getDistance(DistanceUnit.INCH);
+            move(x,y,speed);
+            if (towards) {
+                while (!(distanceHold < distance) && opModeIsActive()) {
+                    if (Math.abs(rightR.getDistance(DistanceUnit.INCH) - distanceHold) < moveCap && rightR.getDistance(DistanceUnit.INCH) < highCap) {
+                        distanceHold = rightR.getDistance(DistanceUnit.INCH);
+                    }
+                    telemetry.addData("rightR", rightR.getDistance(DistanceUnit.INCH));
+                    telemetry.addData("used", distanceHold);
+                    telemetry.update();
+                }
+            }else{
+                while (!(distanceHold > distance) && opModeIsActive()) {
+                    if (Math.abs(rightR.getDistance(DistanceUnit.INCH) - distanceHold) < moveCap && rightR.getDistance(DistanceUnit.INCH) < highCap) {
+                        distanceHold = rightR.getDistance(DistanceUnit.INCH);
+                    }
+                    telemetry.addData("rightR", rightR.getDistance(DistanceUnit.INCH));
+                    telemetry.addData("used", distanceHold);
+                    telemetry.update();
+                }
+            }
+        }else if (sensor.equals("back")){
+            distanceHold = backR.getDistance(DistanceUnit.INCH);
+            move(x,y,speed);
+            if (towards) {
+                while (!(distanceHold < distance) && opModeIsActive()) {
+                    if (Math.abs(backR.getDistance(DistanceUnit.INCH) - distanceHold) < moveCap && backR.getDistance(DistanceUnit.INCH) < highCap) {
+                        distanceHold = backR.getDistance(DistanceUnit.INCH);
+                    }
+                    telemetry.addData("backR", backR.getDistance(DistanceUnit.INCH));
+                    telemetry.addData("used", distanceHold);
+                    telemetry.update();
+                }
+            }else{
+                while (!(distanceHold > distance) && opModeIsActive()) {
+                    if (Math.abs(backR.getDistance(DistanceUnit.INCH) - distanceHold) < moveCap && backR.getDistance(DistanceUnit.INCH) < highCap) {
+                        distanceHold = backR.getDistance(DistanceUnit.INCH);
+                    }
+                    telemetry.addData("backR", backR.getDistance(DistanceUnit.INCH));
+                    telemetry.addData("used", distanceHold);
+                    telemetry.update();
+                }
+            }
+        }else{
+            telemetry.addData("Invalid","sensor input");
+            telemetry.update();
+            sleep(2000);
+        }
+        //
+        if (stop){
+            still();
+        }
+        //
     }
     //
     public void turnWithGyro(double degrees, double speedDirection){
@@ -368,6 +456,19 @@ public abstract class HoloGrande extends LinearOpMode {
     //
     public void turnToAngle(double angle, double speed){
         //
+        /*List<Double> angles = new ArrayList<>();
+        //
+        for (int n = 0; n < 5; n++){
+            angles.add(getAngle());
+        }
+        //
+        int count;
+        int dead;
+        //
+        for (int n = 0; n < 4; n++){
+            if (angles.get(0) - 5 > )
+        }*/
+        //
         if (getAngle() > angle){
             turnWithEncoder(-speed);
         }else{
@@ -378,6 +479,8 @@ public abstract class HoloGrande extends LinearOpMode {
         still();
         //
     }
+    //
+    //public void moveToSensor()
     //
     public void moveToPosition(double inches, double speed, boolean bridge){
         //
@@ -475,6 +578,7 @@ public abstract class HoloGrande extends LinearOpMode {
         }
         return;
     }
+    //</editor-fold>
     //
     //<editor-fold desc="movement teleop">
     public void move(double x, double y, double factor){

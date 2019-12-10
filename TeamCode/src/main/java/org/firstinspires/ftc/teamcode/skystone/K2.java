@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.skystone;
 
+import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
@@ -26,6 +28,8 @@ public class K2 extends HoloLumi{
     boolean ma = false;
     double mr = 0;
     //
+    boolean ignore = false;
+    //
     double origin = 0;
     Boolean orchosen = false;
     //
@@ -34,6 +38,9 @@ public class K2 extends HoloLumi{
     Double pos = 0.0;
     Boolean posing = false;
     Boolean test = false;
+    //
+    int extension = 1320;
+    Boolean extending = false;
     //
     Integer pMode = 0;//
     Integer task = 0;
@@ -64,7 +71,11 @@ public class K2 extends HoloLumi{
         //
         secondaryMotorReversals();
         //
+        lightHardware();
+        //
         motorsWithEncoders();
+        extender.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        extender.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         //
         initGyro();
         //
@@ -116,6 +127,8 @@ public class K2 extends HoloLumi{
                 movement();
                 mouse();
                 //
+                coolLights.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
+                //
                 if (gamepad1.b){
                     pMode = 1;
                     planetary = false;
@@ -123,6 +136,8 @@ public class K2 extends HoloLumi{
                 }
                 //
             }else if(pMode == 1){//pick up
+                //
+                coolLights.setPattern(RevBlinkinLedDriver.BlinkinPattern.RED);
                 //
                 if (upity.getDistance(DistanceUnit.INCH) < 3.3){
                     lifter.setPower(0.6);
@@ -144,9 +159,12 @@ public class K2 extends HoloLumi{
                     pMode = 2;
                     task = 1;
                     still();
+                    grabber.setPosition(grabOpen);
                     lifter.setPower(-.3);
                 }
             }else if (pMode == 2) {//process block
+                //
+                coolLights.setPattern(RevBlinkinLedDriver.BlinkinPattern.ORANGE);
                 //
                 leftHook.setPosition(hookUpLeft);
                 rightHook.setPosition(hookUpRight);
@@ -163,7 +181,7 @@ public class K2 extends HoloLumi{
                     //
                     if (george.getState()){//(currentTime > taskTimer + 1000){
                         lifter.setPower(0);
-                        task++;
+                        task = 2;
                         taskTimer = currentTime;
                     }
                     //
@@ -172,7 +190,7 @@ public class K2 extends HoloLumi{
                     grabber.setPosition(grabClosed);//down
                     //
                     if (currentTime > taskTimer + 500){
-                        task++;
+                        task = 3;
                         lifter.setPower(0.6);
                     }
                 }else if (task == 3){//lifter up
@@ -181,10 +199,13 @@ public class K2 extends HoloLumi{
                         lifter.setPower(0);
                         planetary = true;
                         pMode = 3;
+                        task = 1;
                     }
                 }
                 //
             }else if (pMode == 3){//transport mode
+                //
+                coolLights.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
                 //
                 planetary = true;
                 movement();
@@ -196,6 +217,8 @@ public class K2 extends HoloLumi{
                 //
             }else if (pMode == 4){//lifting mode
                 //
+                coolLights.setPattern(RevBlinkinLedDriver.BlinkinPattern.RED);
+                //
                 planetary = true;
                 movement();
                 mouse();
@@ -205,6 +228,8 @@ public class K2 extends HoloLumi{
                 }
                 //
             }else if (pMode == 5){//engage to foundation
+                //
+                coolLights.setPattern(RevBlinkinLedDriver.BlinkinPattern.ORANGE);
                 //
                 if (!leftTouch.getState()){
                     frontRight.setPower(0.2);
@@ -220,6 +245,8 @@ public class K2 extends HoloLumi{
                 }
                 //
             }else if (pMode == 6){//stacking blocks ->release, default
+                //
+                coolLights.setPattern(RevBlinkinLedDriver.BlinkinPattern.AQUA);
                 //
                 mouse();
                 //
@@ -243,11 +270,18 @@ public class K2 extends HoloLumi{
                 //
             }else if (pMode == 7){
                 //
+                coolLights.setPattern(RevBlinkinLedDriver.BlinkinPattern.RED);
+                //
                 movement();
                 //
                 if (upity.getDistance(DistanceUnit.INCH) > 2.5){
-                    lifter.setPower(-.3);
-                    extender.setPower(-.3);
+                    if (extender.getCurrentPosition() > 500){
+                        extender.setPower(-1);
+                        lifter.setPower(0);
+                    }else {
+                        lifter.setPower(-.3);
+                        extender.setPower(-.3);
+                    }
                 }else {
                     lifter.setPower(0);
                     extender.setPower(0);
@@ -273,6 +307,13 @@ public class K2 extends HoloLumi{
                 test = false;
             }*/
             //</editor-fold>
+            //
+            if (gamepad2.left_bumper){
+                ignore = true;
+            }
+            if (gamepad2.right_bumper){
+                ignore = false;
+            }
             //
             if (gamepad1.y && !plana){
                 planetary = !planetary;
@@ -300,17 +341,14 @@ public class K2 extends HoloLumi{
             telemetry.addData("task", task);
             telemetry.addData("Planetary?", planetary);
             telemetry.addData("conforming?", ma);
-            //telemetry.addData("extender encoder", extender.getCurrentPosition());
             telemetry.addData("hieght of gantry", upity.getDistance(DistanceUnit.INCH));
-            //telemetry.addData("local target angle", loctarang);
-            //telemetry.addData("global target angle", glotarang);
             telemetry.addData("relative yaw", getAngle());
             telemetry.addData("absolute yaw", fixAngle(getAngle() - origin));
             telemetry.addData("origin", origin);
             telemetry.addData("leftx", leftx);
             telemetry.addData("lefty", lefty);
             telemetry.addData("rightx", rightx);
-            telemetry.addData("extender", -gamepad2.right_stick_y);
+            telemetry.addData("extender", extender.getCurrentPosition());
             telemetry.addData("position", pos);
             //</editor-fold>
         }
@@ -356,20 +394,36 @@ public class K2 extends HoloLumi{
             rightHook.setPosition(0.4);
         }
         //rightHook.setPosition(pos);//disabled
-        //
-        if (gamepad2.left_bumper && holding){
-            lifter.setPower(hold);
-            telemetry.addData("lifter", hold);
-        }else if (gamepad2.left_bumper && !holding){
-            hold = otherlefty;
-            telemetry.addData("lifter", hold);
-        }else{
-            if (pMode != 1) {
-                lifter.setPower(otherlefty);
-            }
-            telemetry.addData("lifter", otherlefty);
+        //otherlefty
+        if ((!upTouch.getState() || otherlefty > 0 || ignore) && pMode != 1){
+            lifter.setPower(otherlefty);
+            telemetry.addData("lifting",otherlefty);
+        }else if (pMode != 1){
+            lifter.setPower(0);
         }
-        extender.setPower(otherrighty);
+        if (!extending && !gamepad2.y) {
+            extender.setPower(otherrighty);
+            telemetry.addData("extending","normal");
+        }else if (!extending && gamepad2.y){
+            extending = true;
+            extender.setTargetPosition(extension);
+            extender.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            if (extender.getCurrentPosition() < extension){
+                extender.setPower(-1.0);
+            }else{
+                extender.setPower(1.0);
+            }
+            telemetry.addData("extending", "set move");
+        }else if ((extending && !extender.isBusy()) || (otherrighty != 0)){
+            extending = false;
+            extender.setPower(0);
+            extender.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            telemetry.addData("extending","stop move");
+        }
+        telemetry.addData("forward",extender.getCurrentPosition() < extension);
+        if (gamepad2.x){
+            extender.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        }
     }
     //
 }

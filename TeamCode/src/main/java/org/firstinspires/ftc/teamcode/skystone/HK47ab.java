@@ -23,8 +23,8 @@ public class HK47ab extends HoloLumi {
         //
         initGyro();
         //
-        leftColor.enableLed(false);
-        rightColor.enableLed(false);
+        leftColor.enableLed(true);
+        rightColor.enableLed(true);
         //
         double origin = getAngle();
         //
@@ -37,7 +37,7 @@ public class HK47ab extends HoloLumi {
         //
         //forward(.5, .5);
         //
-        moveToPosition(26 + gap1, .3, true);//24
+        moveToPosition(25 + gap1, .3, true);//24
         //moveToPosition(4, .2, false);
         //
         //while (!(backR.getDistance(DistanceUnit.INCH) > 15 + gap1) && opModeIsActive()){ };
@@ -137,20 +137,25 @@ public class HK47ab extends HoloLumi {
         //
         motorsWithEncoders();//back up
         move(0, -1, .4);
-        while (!(backR.getDistance(DistanceUnit.INCH) < 20) && opModeIsActive()) {}
+        while (!(backR.getDistance(DistanceUnit.INCH) < 25) && opModeIsActive()) {}
         still();
         //
         sleep(200);
         //
-        //turnToAngle(0,.07);
+        turnToAngle(0,.07);//premature correct
         //
         strafeToPosition(-55, .7, true);//go under bridge
         //
         turnToAngle(0,.07);//correct
         //
         motorsWithEncoders();
+        //
         move(-1, 0, .4);//go to foundation
-        while (!(leftR.getDistance(DistanceUnit.INCH) < 17) && opModeIsActive()) {
+        double distanceHold = leftR.getDistance(DistanceUnit.INCH);
+        while (!(distanceHold < 17) && opModeIsActive()) {
+            if (Math.abs(leftR.getDistance(DistanceUnit.INCH) - distanceHold) < 20 && leftR.getDistance(DistanceUnit.INCH) < 500){
+                distanceHold = leftR.getDistance(DistanceUnit.INCH);
+            }
             if (upity.getDistance(DistanceUnit.INCH) < 6){
                 lifter.setPower(0.4);
             }else if (upity.getDistance(DistanceUnit.INCH) > 10){
@@ -182,7 +187,7 @@ public class HK47ab extends HoloLumi {
         //
         sleep(500);
         //
-        double distanceHold = backR.getDistance(DistanceUnit.INCH);
+        distanceHold = backR.getDistance(DistanceUnit.INCH);
         int counter = 0;
         move(0,-1,.3);//pull back
         extender.setPower(-.7);
@@ -230,7 +235,12 @@ public class HK47ab extends HoloLumi {
         turnToAngle(0,.07);
         //
         move(0,1,.6);
-        while (!(backR.getDistance(DistanceUnit.INCH) > 40) && opModeIsActive()) {}
+        distanceHold = backR.getDistance(DistanceUnit.INCH);
+        while (!(distanceHold > 40) && opModeIsActive()) {
+            if (Math.abs(backR.getDistance(DistanceUnit.INCH) - distanceHold) < 20 && backR.getDistance(DistanceUnit.INCH) < 500){
+                distanceHold = backR.getDistance(DistanceUnit.INCH);
+            }
+        }
         still();
         //
         turnWithGyro(170, -.3);

@@ -37,7 +37,7 @@ public class HK47sr extends HoloLumi {
         //
         //forward(.5, .5);
         //
-        moveToPosition(25 + gap1, .3, true);//24
+        moveToPosition(26 + gap1, .3, true);//24.5
         //moveToPosition(4, .2, false);
         //
         //while (!(backR.getDistance(DistanceUnit.INCH) > 15 + gap1) && opModeIsActive()){ };
@@ -50,42 +50,20 @@ public class HK47sr extends HoloLumi {
         telemetry.update();
         //
         Integer position = 0;
-        //
-        motorsWithEncoders();
-        move(-1,0,.4);
-        while (!(leftR.getDistance(DistanceUnit.INCH) < 39) && opModeIsActive()){
-            telemetry.addData("distance", leftR.getDistance(DistanceUnit.INCH));
-            telemetry.addData("left front motor", frontLeft.getPower());
-            telemetry.update();
-        }
+        moveWithSensor("left",39.0,true,.4,-1.0,0.0,false);
         //
         if (leftColor.red() == 0){
             position = 1;
             still();
         }else {
-            motorsWithEncoders();
-            move(-1,0,.4);
-            while (!(leftR.getDistance(DistanceUnit.INCH) < 32) && opModeIsActive()){
-                telemetry.addData("distance", leftR.getDistance(DistanceUnit.INCH));
-                telemetry.addData("left front motor", frontLeft.getPower());
-                telemetry.update();
-            }
+            moveWithSensor("left",32.0,true,.4,-1.0,0.0,false);
             //
             if (leftColor.red() == 0) {
                 position = 2;
                 still();
             }else {
                 position = 3;
-                //
-                motorsWithEncoders();
-                move(-1, 0, .4);
-                while (!(leftR.getDistance(DistanceUnit.INCH) < 25) && opModeIsActive()) {
-                    telemetry.addData("distance", leftR.getDistance(DistanceUnit.INCH));
-                    telemetry.addData("left front motor", frontLeft.getPower());
-                    telemetry.update();
-                }
-                still();
-                //
+                moveWithSensor("left",25.0,true,.4,-1.0,0.0,true);
             }
         }
         //
@@ -133,21 +111,36 @@ public class HK47sr extends HoloLumi {
         lifter.setPower(0);
         //
         leftHook.setPosition(hookUpLeft);
-        //
-        motorsWithEncoders();//back up
-        move(0, -1, .4);
-        while (!(backR.getDistance(DistanceUnit.INCH) < 28) && opModeIsActive()) {}
-        still();
+        //back up
+        moveWithSensor("back",28.0,true,0.4,0.0,-1.0,true);//
+        //</editor-fold>
         //
         sleep(200);
         //
-        strafeToPosition(55, .7, true);//go under bridge
-        //
         turnWithGyro(90, .3);
+        //
+        turnToAngle(90,.07);//premature correct
+        //
+        if (position == 1){
+            moveToPosition(40,.5,true);
+        }else if (position == 2){
+            moveToPosition(50,.5,true);
+        }else{
+            moveToPosition(60,.5,true);
+        }
         //
         grabber.setPosition(grabOpen);
         //
-        moveToPosition(-17,.4,false);
+        sleep(500);
+        //
+        moveToPosition(-50,.4,true);
+        //
+        turnWithGyro(-180,.5);
+        //
+        turnToAngle(-90,.07);//correction
+        //
+        moveWithSensor("left",37.0,false,.3,1.0,0.0,true);
+        //
     }
     //
 }
