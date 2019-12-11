@@ -42,6 +42,8 @@ public class HK47sr extends HoloLumi {
         //
         //while (!(backR.getDistance(DistanceUnit.INCH) > 15 + gap1) && opModeIsActive()){ };
         //
+        turnToAngle(0,.05);
+        //
         still();
         //
         sleep(500);
@@ -56,7 +58,7 @@ public class HK47sr extends HoloLumi {
             position = 1;
             still();
         }else {
-            moveWithSensor("left",32.0,true,.4,-1.0,0.0,false);
+            moveWithSensor("left",32.5,true,.4,-1.0,0.0,false);
             //
             if (leftColor.red() == 0) {
                 position = 2;
@@ -93,7 +95,10 @@ public class HK47sr extends HoloLumi {
         }
         //
         lifter.setPower(-.4);//gantry down to stone
-        while (!george.getState() && opModeIsActive() && !fail){}
+        while (!george.getState() && opModeIsActive() && !fail){
+            telemetry.addData("going","down");
+            telemetry.update();
+        }
         lifter.setPower(0);
         //
         if (fail){
@@ -101,6 +106,9 @@ public class HK47sr extends HoloLumi {
             while (!(upity.getDistance(DistanceUnit.INCH) < 2.2)){}
             lifter.setPower(0);
         }
+        //
+        telemetry.addData("grabbing","skystone");
+        telemetry.update();
         //
         grabber.setPosition(grabClosed);//grab it
         //
@@ -119,28 +127,94 @@ public class HK47sr extends HoloLumi {
         //
         turnWithGyro(90, .3);
         //
-        turnToAngle(90,.07);//premature correct
+        turnToAngle(90,.05);//premature correct
         //
         if (position == 1){
-            moveToPosition(40,.5,true);
+            moveToPosition(40,.8,true);
         }else if (position == 2){
-            moveToPosition(50,.5,true);
+            moveToPosition(45,.8,true);
         }else{
-            moveToPosition(60,.5,true);
+            moveToPosition(50,.8,true);
         }
         //
         grabber.setPosition(grabOpen);
         //
         sleep(500);
         //
-        moveToPosition(-50,.4,true);
+        double dis = 33 - ((position - 1) * 7.5);
         //
-        turnWithGyro(-180,.5);
+        moveWithSensor("back",dis,true,.8,0.0,-1.0,true);
         //
-        turnToAngle(-90,.07);//correction
+        turnWithGyro(-180,1.0);
         //
-        moveWithSensor("left",37.0,false,.3,1.0,0.0,true);
+        turnToAngle(-92,.05);//correction
         //
+        moveWithSensor("left",34.0,false,.5,1.0,0.0,true);
+        //
+        telemetry.addData("moving to","skystone");
+        telemetry.update();
+        //
+        if (position == 3){
+            moveToPosition(10,.3,false);
+            //
+            turnToAngle(-135,.6);
+            turnToAngle(-180, .1);
+            //
+            move(0, 1, .2);
+            while (!qbert.getState() && opModeIsActive()) {
+            }
+            still();
+        }else {
+            move(0, 1, .2);
+            while (!qbert.getState() && opModeIsActive()) {
+            }
+            still();
+        }
+        //
+        lifter.setPower(-.4);//gantry down to stone
+        while (!george.getState() && opModeIsActive()){
+            telemetry.addData("going","down");
+            telemetry.update();
+        }
+        lifter.setPower(0);
+        //
+        grabber.setPosition(grabClosed);
+        //
+        sleep(500);
+        //
+        lifter.setPower(0.4);//gantry up
+        while (!(upity.getDistance(DistanceUnit.INCH) > 2.2) && opModeIsActive()){}
+        lifter.setPower(0);
+        //
+        if (position == 3){
+            turnWithGyro(180,-.8);
+        }else{
+            turnWithGyro(90,-.8);
+        }
+        //
+        if (position == 1){
+            //
+        }else if (position == 2){
+            //
+            move(.34,.94,.5);
+            //
+        }else{
+            //62
+        }
+        motorsWithEncoders();
+        double distanceHold = backR.getDistance(DistanceUnit.INCH);
+        while (!(distanceHold < 38) && opModeIsActive()) {
+            if (Math.abs(backR.getDistance(DistanceUnit.INCH) - distanceHold) < 20 && leftR.getDistance(DistanceUnit.INCH) < 500) {
+                distanceHold = backR.getDistance(DistanceUnit.INCH);
+            }
+            telemetry.addData("leftR", leftR.getDistance(DistanceUnit.INCH));
+            telemetry.addData("used", distanceHold);
+            telemetry.update();
+        }
+        still();
+        moveWithSensor("back",62.0,false,.5,0.0,1.0,true);
+        //
+        moveToPosition(-10,.5,false);
     }
     //
 }
