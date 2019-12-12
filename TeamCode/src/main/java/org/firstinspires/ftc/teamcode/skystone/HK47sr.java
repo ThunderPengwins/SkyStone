@@ -7,8 +7,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 @Autonomous(name = "HK47-stone-red", group = "Sreal")
 public class HK47sr extends HoloLumi {
     //
-    Double gap1 = 0.0;//2.0
-    //
     public void runOpMode() {
         //
         motorHardware();
@@ -37,11 +35,13 @@ public class HK47sr extends HoloLumi {
         //
         //forward(.5, .5);
         //
+        message = "forward-1";
         moveToPosition(26 + gap1, .3, true);//24.5
         //moveToPosition(4, .2, false);
         //
         //while (!(backR.getDistance(DistanceUnit.INCH) > 15 + gap1) && opModeIsActive()){ };
         //
+        message = "correct-1";
         turnToAngle(0,.05);
         //
         still();
@@ -51,6 +51,7 @@ public class HK47sr extends HoloLumi {
         telemetry.addData("Skystone", leftColor.red() == 0);
         telemetry.update();
         //
+        message = "left-pos1";
         Integer position = 0;
         moveWithSensor("left",39.0,true,.4,-1.0,0.0,false);
         //
@@ -58,23 +59,27 @@ public class HK47sr extends HoloLumi {
             position = 1;
             still();
         }else {
+            message = "left-pos2";
             moveWithSensor("left",32.5,true,.4,-1.0,0.0,false);
             //
             if (leftColor.red() == 0) {
                 position = 2;
                 still();
             }else {
+                message = "left-pos3";
                 position = 3;
                 moveWithSensor("left",25.0,true,.4,-1.0,0.0,true);
             }
         }
         //
+        message = "backup-1";
         moveToPosition(-7, .5, true);
         //
         leftHook.setPosition(hookDownLeft);
         //
         sleep(500);
         //
+        message = "toStone-1";
         motorsWithEncoders();
         move(0, 1, .4);//charge (to stone)
         while (!(qbert.getState()) && opModeIsActive() && !(backR.getDistance(DistanceUnit.INCH) > 60)) {
@@ -87,6 +92,9 @@ public class HK47sr extends HoloLumi {
                 lifter.setPower(0);
                 extender.setPower(0);
             }
+            telemetry.addData("stage",message);
+            telemetry.addData("backR",backR.getDistance(DistanceUnit.INCH));
+            telemetry.update();
         }
         still();
         boolean fail = false;
@@ -94,9 +102,11 @@ public class HK47sr extends HoloLumi {
             fail = true;
         }
         //
+        message = "gantryDown-1";
         lifter.setPower(-.4);//gantry down to stone
         while (!george.getState() && opModeIsActive() && !fail){
-            telemetry.addData("going","down");
+            telemetry.addData("stage",message);
+            telemetry.addData("fail",fail);
             telemetry.update();
         }
         lifter.setPower(0);
@@ -107,12 +117,15 @@ public class HK47sr extends HoloLumi {
             lifter.setPower(0);
         }
         //
-        telemetry.addData("grabbing","skystone");
-        telemetry.update();
+        message = "grabStone-1";
+        setStage();
         //
         grabber.setPosition(grabClosed);//grab it
         //
         sleep(500);
+        //
+        message = "gantryUp-1";
+        setStage();
         //
         lifter.setPower(0.4);//gantry up
         while (!(upity.getDistance(DistanceUnit.INCH) > 2.2) && opModeIsActive()){}
@@ -120,82 +133,110 @@ public class HK47sr extends HoloLumi {
         //
         leftHook.setPosition(hookUpLeft);
         //back up
+        message = "backup-2";
         moveWithSensor("back",28.0,true,0.4,0.0,-1.0,true);//
         //</editor-fold>
         //
         sleep(200);
         //
+        message = "turn-toTape";
         turnWithGyro(90, .3);
         //
+        message = "correct-2";
         turnToAngle(90,.05);//premature correct
         //
         if (position == 1){
+            message = "move-tape-pos1";
             moveToPosition(40,.8,true);
         }else if (position == 2){
+            message = "move-tape-pos1";
             moveToPosition(45,.8,true);
         }else{
+            message = "move-tape-pos1";
             moveToPosition(50,.8,true);
         }
         //
+        message = "release-stone";
+        setStage();
         grabber.setPosition(grabOpen);
         //
         sleep(500);
         //
         double dis = 33 - ((position - 1) * 7.5);
         //
+        message = "back-overTape";
         moveWithSensor("back",dis,true,.8,0.0,-1.0,true);
         //
+        message = "turn-forStones";
         turnWithGyro(-180,1.0);
         //
+        message = "correct-3";
         turnToAngle(-92,.05);//correction
         //
+        if (position != 3){
+            leftHook.setPosition(hookDownLeft);
+        }
+        //
+        message = "slide-intoDMs";
         moveWithSensor("left",34.0,false,.5,1.0,0.0,true);
+        //
+        leftHook.setPosition(hookUpLeft);
         //
         telemetry.addData("moving to","skystone");
         telemetry.update();
         //
         if (position == 3){
+            message = "grab-2-pos3";
             moveToPosition(10,.3,false);
             //
+            message = "turn1-secureStone-pos3";
             turnToAngle(-135,.6);
+            message = "turn2-secureStone-pos3";
             turnToAngle(-180, .1);
             //
+            message = "toStone-2-pos3";
+            setStage();
             move(0, 1, .2);
-            while (!qbert.getState() && opModeIsActive()) {
-            }
+            while (!qbert.getState() && opModeIsActive() && leftTouch.getState() && rightTouch.getState()) {}
             still();
         }else {
+            message = "toStone-2-pos1,pos2";
+            setStage();
             move(0, 1, .2);
-            while (!qbert.getState() && opModeIsActive()) {
-            }
+            while (!qbert.getState() && opModeIsActive() && leftTouch.getState() && rightTouch.getState()) {}
             still();
         }
         //
+        message = "gantryDown-2";
+        setStage();
         lifter.setPower(-.4);//gantry down to stone
-        while (!george.getState() && opModeIsActive()){
-            telemetry.addData("going","down");
-            telemetry.update();
-        }
+        while (!george.getState() && opModeIsActive()){}
         lifter.setPower(0);
         //
+        message = "grabStone-2";
+        setStage();
         grabber.setPosition(grabClosed);
-        //
         sleep(500);
         //
+        message = "gantryUp-2";
+        setStage();
         lifter.setPower(0.4);//gantry up
         while (!(upity.getDistance(DistanceUnit.INCH) > 2.2) && opModeIsActive()){}
         lifter.setPower(0);
         //
         if (position == 3){
-            turnWithGyro(180,-.8);
+            message = "turn-toTape-pos3";
+            turnWithGyro(90,-.5);
         }else{
-            turnWithGyro(90,-.8);
+            message = "turn-toTape-pos1,pos2";
+            turnWithGyro(180,-.5);
         }
         //
         if (position == 1){
             //
         }else if (position == 2){
             //
+            message = "wrapMove-pos2";
             move(.34,.94,.5);
             //
         }else{
@@ -207,13 +248,16 @@ public class HK47sr extends HoloLumi {
             if (Math.abs(backR.getDistance(DistanceUnit.INCH) - distanceHold) < 20 && leftR.getDistance(DistanceUnit.INCH) < 500) {
                 distanceHold = backR.getDistance(DistanceUnit.INCH);
             }
+            telemetry.addData("stage",message);
             telemetry.addData("leftR", leftR.getDistance(DistanceUnit.INCH));
             telemetry.addData("used", distanceHold);
             telemetry.update();
         }
         still();
+        message = "overTape-2";
         moveWithSensor("back",62.0,false,.5,0.0,1.0,true);
         //
+        message = "ontoTape";
         moveToPosition(-10,.5,false);
     }
     //

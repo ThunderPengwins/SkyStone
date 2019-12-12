@@ -78,6 +78,11 @@ public abstract class HoloGrande extends LinearOpMode {
     //
     //</editor-fold>
     //
+    String message = "default";
+    //
+    Double gap1 = 2.0;//2.0
+    Double gap2 = 2.0;//2.0
+    //
     private static MediaPlayer mediaPlayer = null;
     //
     //<editor-fold desc="establishing">
@@ -259,8 +264,10 @@ public abstract class HoloGrande extends LinearOpMode {
                     if (Math.abs(leftR.getDistance(DistanceUnit.INCH) - distanceHold) < moveCap && leftR.getDistance(DistanceUnit.INCH) < highCap) {
                         distanceHold = leftR.getDistance(DistanceUnit.INCH);
                     }
+                    telemetry.addData("stage",message);
                     telemetry.addData("leftR", leftR.getDistance(DistanceUnit.INCH));
                     telemetry.addData("used", distanceHold);
+                    telemetry.addData("target",distance);
                     telemetry.update();
                 }
             }else{
@@ -268,8 +275,10 @@ public abstract class HoloGrande extends LinearOpMode {
                     if (Math.abs(leftR.getDistance(DistanceUnit.INCH) - distanceHold) < moveCap && leftR.getDistance(DistanceUnit.INCH) < highCap) {
                         distanceHold = leftR.getDistance(DistanceUnit.INCH);
                     }
+                    telemetry.addData("stage",message);
                     telemetry.addData("leftR", leftR.getDistance(DistanceUnit.INCH));
                     telemetry.addData("used", distanceHold);
+                    telemetry.addData("target",distance);
                     telemetry.update();
                 }
             }
@@ -281,8 +290,10 @@ public abstract class HoloGrande extends LinearOpMode {
                     if (Math.abs(rightR.getDistance(DistanceUnit.INCH) - distanceHold) < moveCap && rightR.getDistance(DistanceUnit.INCH) < highCap) {
                         distanceHold = rightR.getDistance(DistanceUnit.INCH);
                     }
+                    telemetry.addData("stage",message);
                     telemetry.addData("rightR", rightR.getDistance(DistanceUnit.INCH));
                     telemetry.addData("used", distanceHold);
+                    telemetry.addData("target",distance);
                     telemetry.update();
                 }
             }else{
@@ -290,8 +301,10 @@ public abstract class HoloGrande extends LinearOpMode {
                     if (Math.abs(rightR.getDistance(DistanceUnit.INCH) - distanceHold) < moveCap && rightR.getDistance(DistanceUnit.INCH) < highCap) {
                         distanceHold = rightR.getDistance(DistanceUnit.INCH);
                     }
+                    telemetry.addData("stage",message);
                     telemetry.addData("rightR", rightR.getDistance(DistanceUnit.INCH));
                     telemetry.addData("used", distanceHold);
+                    telemetry.addData("target",distance);
                     telemetry.update();
                 }
             }
@@ -303,8 +316,10 @@ public abstract class HoloGrande extends LinearOpMode {
                     if (Math.abs(backR.getDistance(DistanceUnit.INCH) - distanceHold) < moveCap && backR.getDistance(DistanceUnit.INCH) < highCap) {
                         distanceHold = backR.getDistance(DistanceUnit.INCH);
                     }
+                    telemetry.addData("stage",message);
                     telemetry.addData("backR", backR.getDistance(DistanceUnit.INCH));
                     telemetry.addData("used", distanceHold);
+                    telemetry.addData("target",distance);
                     telemetry.update();
                 }
             }else{
@@ -312,8 +327,10 @@ public abstract class HoloGrande extends LinearOpMode {
                     if (Math.abs(backR.getDistance(DistanceUnit.INCH) - distanceHold) < moveCap && backR.getDistance(DistanceUnit.INCH) < highCap) {
                         distanceHold = backR.getDistance(DistanceUnit.INCH);
                     }
+                    telemetry.addData("stage",message);
                     telemetry.addData("backR", backR.getDistance(DistanceUnit.INCH));
                     telemetry.addData("used", distanceHold);
+                    telemetry.addData("target",distance);
                     telemetry.update();
                 }
             }
@@ -333,12 +350,6 @@ public abstract class HoloGrande extends LinearOpMode {
         //<editor-fold desc="Initialize">
         angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         double yaw = -angles.firstAngle;//make this negative
-        telemetry.addData("Speed Direction", speedDirection);
-        telemetry.addData("Yaw", yaw);
-        telemetry.update();
-        //
-        telemetry.addData("stuff", speedDirection);
-        telemetry.update();
         //
         double first;
         double second;
@@ -373,14 +384,16 @@ public abstract class HoloGrande extends LinearOpMode {
         //
         turnWithEncoder(speedDirection);
         //
-        telemetry.addData("turn","stage 1");
-        telemetry.update();
-        //
         if (Math.abs(firsta - firstb) < 11) {
             while (!(firsta < yaw && yaw < firstb) && opModeIsActive()) {//within range?
                 angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
                 gravity = imu.getGravity();
                 yaw = -angles.firstAngle;
+                telemetry.addData("stage",message);
+                telemetry.addData("turn","stage 1");
+                telemetry.addData("angle",getAngle());
+                telemetry.addData("target",convertify(first));
+                telemetry.update();
             }
         }else{
             //
@@ -388,9 +401,10 @@ public abstract class HoloGrande extends LinearOpMode {
                 angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
                 gravity = imu.getGravity();
                 yaw = -angles.firstAngle;
-                telemetry.addData("Position", yaw);
-                telemetry.addData("first before", first);
-                telemetry.addData("first after", convertify(first));
+                telemetry.addData("stage",message);
+                telemetry.addData("turn","stage 1");
+                telemetry.addData("angle",getAngle());
+                telemetry.addData("target",convertify(first));
                 telemetry.update();
             }
         }
@@ -400,19 +414,26 @@ public abstract class HoloGrande extends LinearOpMode {
         //
         turnWithEncoder(speedDirection / 3);
         //
-        telemetry.addData("turn","stage 2");
-        telemetry.update();
-        //
         if (Math.abs(seconda - secondb) < 11) {
             while (!(seconda < yaw && yaw < secondb) && opModeIsActive()) {//within range?
                 angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
                 gravity = imu.getGravity();
                 yaw = -angles.firstAngle;
+                telemetry.addData("stage",message);
+                telemetry.addData("turn","stage 2");
+                telemetry.addData("angle",getAngle());
+                telemetry.addData("target",convertify(second));
+                telemetry.update();
             }
             while (!((seconda < yaw && yaw < 180) || (-180 < yaw && yaw < secondb)) && opModeIsActive()) {//within range?
                 angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
                 gravity = imu.getGravity();
                 yaw = -angles.firstAngle;
+                telemetry.addData("stage",message);
+                telemetry.addData("turn","stage 2");
+                telemetry.addData("angle",getAngle());
+                telemetry.addData("target",convertify(second));
+                telemetry.update();
             }
             frontLeft.setPower(0);
             frontRight.setPower(0);
@@ -475,9 +496,18 @@ public abstract class HoloGrande extends LinearOpMode {
             turnWithEncoder(speed);
         }
         //
-        while (!(angle - 5 < getAngle() && getAngle() < angle + 5)){}
+        while (!(angle - 5 < getAngle() && getAngle() < angle + 5)){
+            telemetry.addData("stage",message);
+            telemetry.addData("angle",getAngle());
+            telemetry.addData("target",angle);
+            telemetry.update();
+        }
         still();
         //
+    }
+    public void setStage(){
+        telemetry.addData("stage",message);
+        telemetry.update();
     }
     //
     //public void moveToSensor()
@@ -501,7 +531,11 @@ public abstract class HoloGrande extends LinearOpMode {
         frontRight.setPower(speed);
         backRight.setPower(speed);
         //
-        while (frontLeft.isBusy() && frontRight.isBusy() && backLeft.isBusy() && backRight.isBusy() && opModeIsActive()){}
+        while (frontLeft.isBusy() && frontRight.isBusy() && backLeft.isBusy() && backRight.isBusy() && opModeIsActive()){
+            telemetry.addData("stage",message);
+            telemetry.addData("moving",inches + " inches");
+            telemetry.update();
+        }
         if (!bridge) {
             frontRight.setPower(0);
             frontLeft.setPower(0);

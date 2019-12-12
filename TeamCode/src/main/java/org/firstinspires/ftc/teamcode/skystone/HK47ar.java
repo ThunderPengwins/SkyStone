@@ -7,8 +7,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 @Autonomous(name = "HK47-all-red", group = "Sreal")
 public class HK47ar extends HoloLumi {
     //
-    Double gap1 = 0.0;//2.0
-    //
     public void runOpMode() {
         //
         motorHardware();
