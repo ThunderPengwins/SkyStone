@@ -258,10 +258,14 @@ public abstract class HoloGrande extends LinearOpMode {
         double distanceHold;
         if (sensor.equals("left")){
             distanceHold = leftR.getDistance(DistanceUnit.INCH);
+            if (leftR.getDistance(DistanceUnit.INCH) > 70 && leftR.getDistance(DistanceUnit.INCH) < 2){
+                while (leftR.getDistance(DistanceUnit.INCH) > 70 && leftR.getDistance(DistanceUnit.INCH) < 2){}
+                distanceHold = leftR.getDistance(DistanceUnit.INCH);
+            }
             move(x,y,speed);
             if (towards) {
                 while (!(distanceHold < distance) && opModeIsActive()) {
-                    if (Math.abs(leftR.getDistance(DistanceUnit.INCH) - distanceHold) < moveCap && leftR.getDistance(DistanceUnit.INCH) < highCap) {
+                    if (Math.abs(leftR.getDistance(DistanceUnit.INCH) - distanceHold) < moveCap && leftR.getDistance(DistanceUnit.INCH) < highCap && leftR.getDistance(DistanceUnit.INCH) < distanceHold) {
                         distanceHold = leftR.getDistance(DistanceUnit.INCH);
                     }
                     telemetry.addData("stage",message);
@@ -272,7 +276,7 @@ public abstract class HoloGrande extends LinearOpMode {
                 }
             }else{
                 while (!(distanceHold > distance) && opModeIsActive()) {
-                    if (Math.abs(leftR.getDistance(DistanceUnit.INCH) - distanceHold) < moveCap && leftR.getDistance(DistanceUnit.INCH) < highCap) {
+                    if (Math.abs(leftR.getDistance(DistanceUnit.INCH) - distanceHold) < moveCap && leftR.getDistance(DistanceUnit.INCH) < highCap && leftR.getDistance(DistanceUnit.INCH) > distanceHold) {
                         distanceHold = leftR.getDistance(DistanceUnit.INCH);
                     }
                     telemetry.addData("stage",message);
@@ -284,10 +288,14 @@ public abstract class HoloGrande extends LinearOpMode {
             }
         }else if (sensor.equals("right")){
             distanceHold = rightR.getDistance(DistanceUnit.INCH);
+            if (rightR.getDistance(DistanceUnit.INCH) > 70 && rightR.getDistance(DistanceUnit.INCH) < 2){
+                while (rightR.getDistance(DistanceUnit.INCH) > 70 && rightR.getDistance(DistanceUnit.INCH) < 2){}
+                distanceHold = rightR.getDistance(DistanceUnit.INCH);
+            }
             move(x,y,speed);
             if (towards) {
                 while (!(distanceHold < distance) && opModeIsActive()) {
-                    if (Math.abs(rightR.getDistance(DistanceUnit.INCH) - distanceHold) < moveCap && rightR.getDistance(DistanceUnit.INCH) < highCap) {
+                    if (Math.abs(rightR.getDistance(DistanceUnit.INCH) - distanceHold) < moveCap && rightR.getDistance(DistanceUnit.INCH) < highCap && rightR.getDistance(DistanceUnit.INCH) < distanceHold) {
                         distanceHold = rightR.getDistance(DistanceUnit.INCH);
                     }
                     telemetry.addData("stage",message);
@@ -298,7 +306,7 @@ public abstract class HoloGrande extends LinearOpMode {
                 }
             }else{
                 while (!(distanceHold > distance) && opModeIsActive()) {
-                    if (Math.abs(rightR.getDistance(DistanceUnit.INCH) - distanceHold) < moveCap && rightR.getDistance(DistanceUnit.INCH) < highCap) {
+                    if (Math.abs(rightR.getDistance(DistanceUnit.INCH) - distanceHold) < moveCap && rightR.getDistance(DistanceUnit.INCH) < highCap && rightR.getDistance(DistanceUnit.INCH) > distanceHold) {
                         distanceHold = rightR.getDistance(DistanceUnit.INCH);
                     }
                     telemetry.addData("stage",message);
@@ -310,10 +318,14 @@ public abstract class HoloGrande extends LinearOpMode {
             }
         }else if (sensor.equals("back")){
             distanceHold = backR.getDistance(DistanceUnit.INCH);
+            if (backR.getDistance(DistanceUnit.INCH) > 70 && backR.getDistance(DistanceUnit.INCH) < 2){
+                while (backR.getDistance(DistanceUnit.INCH) > 70 && backR.getDistance(DistanceUnit.INCH) < 2){}
+                distanceHold = backR.getDistance(DistanceUnit.INCH);
+            }
             move(x,y,speed);
             if (towards) {
                 while (!(distanceHold < distance) && opModeIsActive()) {
-                    if (Math.abs(backR.getDistance(DistanceUnit.INCH) - distanceHold) < moveCap && backR.getDistance(DistanceUnit.INCH) < highCap) {
+                    if (Math.abs(backR.getDistance(DistanceUnit.INCH) - distanceHold) < moveCap && backR.getDistance(DistanceUnit.INCH) < highCap && backR.getDistance(DistanceUnit.INCH) < distanceHold) {
                         distanceHold = backR.getDistance(DistanceUnit.INCH);
                     }
                     telemetry.addData("stage",message);
@@ -324,7 +336,7 @@ public abstract class HoloGrande extends LinearOpMode {
                 }
             }else{
                 while (!(distanceHold > distance) && opModeIsActive()) {
-                    if (Math.abs(backR.getDistance(DistanceUnit.INCH) - distanceHold) < moveCap && backR.getDistance(DistanceUnit.INCH) < highCap) {
+                    if (Math.abs(backR.getDistance(DistanceUnit.INCH) - distanceHold) < moveCap && backR.getDistance(DistanceUnit.INCH) < highCap && backR.getDistance(DistanceUnit.INCH) > distanceHold) {
                         distanceHold = backR.getDistance(DistanceUnit.INCH);
                     }
                     telemetry.addData("stage",message);
