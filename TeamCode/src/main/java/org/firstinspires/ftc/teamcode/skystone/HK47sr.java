@@ -16,6 +16,7 @@ public class HK47sr extends HoloLumi {
         secondaryMotorReversals();
         //
         motorsWithEncoders();
+        resetEncoders();
         //
         telemetry.addData("Hardware initialized","");
         //
@@ -140,7 +141,7 @@ public class HK47sr extends HoloLumi {
         sleep(200);
         //
         message = "turn-toTape";
-        turnWithGyro(90, .3);
+        turnWithGyro(87, .3);
         //
         message = "correct-2";
         turnToAngle(90,.05);//premature correct
@@ -162,13 +163,15 @@ public class HK47sr extends HoloLumi {
         //
         sleep(500);
         //
-        double dis = 33 - ((position - 1) * 7.5);
+        moveToPosition(-15,.5,false);
+        //
+        double dis = 35 - ((position - 1) * 7.5);
         //
         message = "back-overTape";
         moveWithSensor("back",dis,true,.8,0.0,-1.0,true);
         //
         message = "turn-forStones";
-        turnWithGyro(-180,1.0);
+        turnWithGyro(180,0.5);
         //
         message = "correct-3";
         turnToAngle(-92,.05);//correction
