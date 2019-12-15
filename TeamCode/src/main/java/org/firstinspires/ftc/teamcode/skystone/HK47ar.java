@@ -21,8 +21,13 @@ public class HK47ar extends HoloLumi {
         //
         initGyro();
         //
-        leftColor.enableLed(false);
-        rightColor.enableLed(false);
+        if (light){
+            leftColor.enableLed(true);
+            rightColor.enableLed(true);
+        }else {
+            leftColor.enableLed(false);
+            rightColor.enableLed(false);
+        }
         //
         double origin = getAngle();
         //

@@ -174,7 +174,7 @@ public class K2 extends HoloLumi{
                     if (george.getState()) {
                         task++;
                         taskTimer = currentTime;
-                        lifter.setPower(-.3);
+                        lifter.setPower(-.6);
                     }
                     //
                 }else if (task == 1){//lifter down
@@ -195,7 +195,7 @@ public class K2 extends HoloLumi{
                     }
                 }else if (task == 3){//lifter up
                     //
-                    if (upity.getDistance(DistanceUnit.INCH) > 2.2){
+                    if (upity.getDistance(DistanceUnit.INCH) > 2){
                         lifter.setPower(0);
                         planetary = true;
                         pMode = 3;
@@ -279,7 +279,7 @@ public class K2 extends HoloLumi{
                         extender.setPower(-1);
                         lifter.setPower(0);
                     }else {
-                        lifter.setPower(-.3);
+                        lifter.setPower(-.7);
                         extender.setPower(-.3);
                     }
                 }else {

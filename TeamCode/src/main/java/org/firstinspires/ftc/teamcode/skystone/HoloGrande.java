@@ -80,6 +80,8 @@ public abstract class HoloGrande extends LinearOpMode {
     //
     String message = "default";
     //
+    Boolean light = false;
+    //
     Double gap1 = 2.0;//2.0
     Double gap2 = 2.0;//2.0
     //
@@ -258,106 +260,124 @@ public abstract class HoloGrande extends LinearOpMode {
     //
     public void moveWithSensor(String sensor, Double distance, Boolean towards, Double speed, Double x, Double y, Boolean stop){
         //
-        int moveCap = 20;
+        int moveCap = 30;
         int highCap = 70;
         int lowCap = 2;
         //
         motorsWithEncoders();
         double distanceHold;
         if (sensor.equals("left")){
-            distanceHold = leftR.getDistance(DistanceUnit.INCH);
-            if (leftR.getDistance(DistanceUnit.INCH) > highCap || leftR.getDistance(DistanceUnit.INCH) < lowCap){
-                while (leftR.getDistance(DistanceUnit.INCH) > highCap || leftR.getDistance(DistanceUnit.INCH) < lowCap){}
-                distanceHold = leftR.getDistance(DistanceUnit.INCH);
-            }
-            move(x,y,speed);
             if (towards) {
+                distanceHold = leftR.getDistance(DistanceUnit.INCH);
+                if ((leftR.getDistance(DistanceUnit.INCH) > highCap) || (leftR.getDistance(DistanceUnit.INCH) < distance)){
+                    while ((leftR.getDistance(DistanceUnit.INCH) > highCap) || (leftR.getDistance(DistanceUnit.INCH) < distance)){}
+                    distanceHold = leftR.getDistance(DistanceUnit.INCH);
+                }
+                move(x,y,speed);
                 while (!(distanceHold < distance) && opModeIsActive()) {
                     if ((Math.abs(leftR.getDistance(DistanceUnit.INCH) - distanceHold) < moveCap) && (leftR.getDistance(DistanceUnit.INCH) > lowCap) && (leftR.getDistance(DistanceUnit.INCH) < highCap) && (leftR.getDistance(DistanceUnit.INCH) < distanceHold)) {
                         distanceHold = leftR.getDistance(DistanceUnit.INCH);
                     }
-                    telemetry.addData("stage",message);
+                    /*telemetry.addData("stage",message);
                     telemetry.addData("leftR", leftR.getDistance(DistanceUnit.INCH));
                     telemetry.addData("used", distanceHold);
                     telemetry.addData("target",distance);
                     telemetry.addData("encoderFL",frontLeft.getCurrentPosition());
-                    telemetry.update();
+                    telemetry.update();*/
                 }
             }else{
+                distanceHold = leftR.getDistance(DistanceUnit.INCH);
+                if ((leftR.getDistance(DistanceUnit.INCH) > distance) || (leftR.getDistance(DistanceUnit.INCH) < lowCap)){
+                    while ((leftR.getDistance(DistanceUnit.INCH) > distance) || (leftR.getDistance(DistanceUnit.INCH) < lowCap)){}
+                    distanceHold = leftR.getDistance(DistanceUnit.INCH);
+                }
+                move(x,y,speed);
                 while (!(distanceHold > distance) && opModeIsActive()) {
                     if ((Math.abs(leftR.getDistance(DistanceUnit.INCH) - distanceHold) < moveCap) && (leftR.getDistance(DistanceUnit.INCH) > lowCap) && (leftR.getDistance(DistanceUnit.INCH) < highCap) && (leftR.getDistance(DistanceUnit.INCH) > distanceHold)) {
                         distanceHold = leftR.getDistance(DistanceUnit.INCH);
                     }
-                    telemetry.addData("stage",message);
+                    /*telemetry.addData("stage",message);
                     telemetry.addData("leftR", leftR.getDistance(DistanceUnit.INCH));
                     telemetry.addData("used", distanceHold);
                     telemetry.addData("target",distance);
                     telemetry.addData("encoderFL",frontLeft.getCurrentPosition());
-                    telemetry.update();
+                    telemetry.update();*/
                 }
             }
         }else if (sensor.equals("right")){
-            distanceHold = rightR.getDistance(DistanceUnit.INCH);
-            if (rightR.getDistance(DistanceUnit.INCH) > 70 && rightR.getDistance(DistanceUnit.INCH) < 2){
-                while (rightR.getDistance(DistanceUnit.INCH) > 70 && rightR.getDistance(DistanceUnit.INCH) < 2){}
-                distanceHold = rightR.getDistance(DistanceUnit.INCH);
-            }
-            move(x,y,speed);
             if (towards) {
+                distanceHold = rightR.getDistance(DistanceUnit.INCH);
+                if ((rightR.getDistance(DistanceUnit.INCH) > highCap) || (rightR.getDistance(DistanceUnit.INCH) < distance)){
+                    while ((rightR.getDistance(DistanceUnit.INCH) > highCap) || (rightR.getDistance(DistanceUnit.INCH) < distance)){}
+                    distanceHold = rightR.getDistance(DistanceUnit.INCH);
+                }
+                move(x,y,speed);
                 while (!(distanceHold < distance) && opModeIsActive()) {
                     if ((Math.abs(rightR.getDistance(DistanceUnit.INCH) - distanceHold) < moveCap) && (rightR.getDistance(DistanceUnit.INCH) < highCap) && (rightR.getDistance(DistanceUnit.INCH) < distanceHold)) {
                         distanceHold = rightR.getDistance(DistanceUnit.INCH);
                     }
-                    telemetry.addData("stage",message);
+                    /*telemetry.addData("stage",message);
                     telemetry.addData("rightR", rightR.getDistance(DistanceUnit.INCH));
                     telemetry.addData("used", distanceHold);
                     telemetry.addData("target",distance);
                     telemetry.addData("encoderFL",frontLeft.getCurrentPosition());
-                    telemetry.update();
+                    telemetry.update();*/
                 }
             }else{
+                distanceHold = rightR.getDistance(DistanceUnit.INCH);
+                if ((rightR.getDistance(DistanceUnit.INCH) > distance) || (rightR.getDistance(DistanceUnit.INCH) < lowCap)){
+                    while ((rightR.getDistance(DistanceUnit.INCH) > distance) || (rightR.getDistance(DistanceUnit.INCH) < lowCap)){}
+                    distanceHold = rightR.getDistance(DistanceUnit.INCH);
+                }
+                move(x,y,speed);
                 while (!(distanceHold > distance) && opModeIsActive()) {
                     if ((Math.abs(rightR.getDistance(DistanceUnit.INCH) - distanceHold) < moveCap) && (rightR.getDistance(DistanceUnit.INCH) < highCap) && (rightR.getDistance(DistanceUnit.INCH) > distanceHold)) {
                         distanceHold = rightR.getDistance(DistanceUnit.INCH);
                     }
-                    telemetry.addData("stage",message);
+                    /*telemetry.addData("stage",message);
                     telemetry.addData("rightR", rightR.getDistance(DistanceUnit.INCH));
                     telemetry.addData("used", distanceHold);
                     telemetry.addData("target",distance);
                     telemetry.addData("encoderFL",frontLeft.getCurrentPosition());
-                    telemetry.update();
+                    telemetry.update();*/
                 }
             }
         }else if (sensor.equals("back")){
-            distanceHold = backR.getDistance(DistanceUnit.INCH);
-            if (backR.getDistance(DistanceUnit.INCH) > 70 && backR.getDistance(DistanceUnit.INCH) < 2){
-                while (backR.getDistance(DistanceUnit.INCH) > 70 && backR.getDistance(DistanceUnit.INCH) < 2){}
-                distanceHold = backR.getDistance(DistanceUnit.INCH);
-            }
-            move(x,y,speed);
             if (towards) {
+                distanceHold = backR.getDistance(DistanceUnit.INCH);
+                if ((backR.getDistance(DistanceUnit.INCH) > highCap) || (backR.getDistance(DistanceUnit.INCH) < distance)){
+                    while ((backR.getDistance(DistanceUnit.INCH) > highCap) || (backR.getDistance(DistanceUnit.INCH) < distance)){}
+                    distanceHold = backR.getDistance(DistanceUnit.INCH);
+                }
+                move(x,y,speed);
                 while (!(distanceHold < distance) && opModeIsActive()) {
                     if ((Math.abs(backR.getDistance(DistanceUnit.INCH) - distanceHold) < moveCap) && (backR.getDistance(DistanceUnit.INCH) < highCap) && (backR.getDistance(DistanceUnit.INCH) < distanceHold)) {
                         distanceHold = backR.getDistance(DistanceUnit.INCH);
                     }
-                    telemetry.addData("stage",message);
+                    /*telemetry.addData("stage",message);
                     telemetry.addData("backR", backR.getDistance(DistanceUnit.INCH));
                     telemetry.addData("used", distanceHold);
                     telemetry.addData("target",distance);
                     telemetry.addData("encoderFL",frontLeft.getCurrentPosition());
-                    telemetry.update();
+                    telemetry.update();*/
                 }
             }else{
+                distanceHold = backR.getDistance(DistanceUnit.INCH);
+                if ((backR.getDistance(DistanceUnit.INCH) > distance) || (backR.getDistance(DistanceUnit.INCH) < lowCap)){
+                    while ((backR.getDistance(DistanceUnit.INCH) > distance) || (backR.getDistance(DistanceUnit.INCH) < lowCap)){}
+                    distanceHold = backR.getDistance(DistanceUnit.INCH);
+                }
+                move(x,y,speed);
                 while (!(distanceHold > distance) && opModeIsActive()) {
                     if ((Math.abs(backR.getDistance(DistanceUnit.INCH) - distanceHold) < moveCap) && (backR.getDistance(DistanceUnit.INCH) < highCap) && (backR.getDistance(DistanceUnit.INCH) > distanceHold)) {
                         distanceHold = backR.getDistance(DistanceUnit.INCH);
                     }
-                    telemetry.addData("stage",message);
+                    /*telemetry.addData("stage",message);
                     telemetry.addData("backR", backR.getDistance(DistanceUnit.INCH));
                     telemetry.addData("used", distanceHold);
                     telemetry.addData("target",distance);
                     telemetry.addData("encoderFL",frontLeft.getCurrentPosition());
-                    telemetry.update();
+                    telemetry.update();*/
                 }
             }
         }else{
@@ -383,8 +403,8 @@ public abstract class HoloGrande extends LinearOpMode {
         //
         if (speedDirection > 0){//set target positions
             //<editor-fold desc="turn right">
-            if (degrees > 10){
-                first = fixAngle((degrees - 10) + (yaw));
+            if (degrees > 15){
+                first = fixAngle((degrees - 15) + (yaw));
                 second = fixAngle(degrees + yaw);
             }else{
                 first = fixAngle(yaw);
@@ -394,7 +414,7 @@ public abstract class HoloGrande extends LinearOpMode {
         }else{
             //<editor-fold desc="turn left">
             if (degrees > 10){
-                first = fixAngle(-(degrees - 10) + yaw);
+                first = fixAngle(-(degrees - 15) + yaw);
                 second = fixAngle(-degrees + yaw);
             }else{
                 first = fixAngle(yaw);

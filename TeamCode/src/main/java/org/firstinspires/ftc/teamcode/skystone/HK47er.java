@@ -4,8 +4,8 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
-@Autonomous(name = "HK47-stone-red", group = "Sreal")
-public class HK47sr extends HoloLumi {
+@Autonomous(name = "HK47-easy-red", group = "Sreal")
+public class HK47er extends HoloLumi {
     //
     public void runOpMode() {
         //
@@ -42,7 +42,7 @@ public class HK47sr extends HoloLumi {
         //forward(.5, .5);
         //
         message = "forward-1";
-        moveToPosition(26 + gap1, .3, true);//24.5
+        moveToPosition(27 + gap1, .3, true);//24.5
         //moveToPosition(4, .2, false);
         //
         //while (!(backR.getDistance(DistanceUnit.INCH) > 15 + gap1) && opModeIsActive()){ };
@@ -170,129 +170,8 @@ public class HK47sr extends HoloLumi {
         //
         turnToAngle(90, 0.05);
         //
-        moveToPosition(-30,.6,false);
+        moveToPosition(-10,.6,false);
         //
-        double dis = 27.5 - ((position - 1) * 7.5);//27.5
-        //
-        message = "back-overTape";
-        moveWithSensor("back",dis,true,.6,0.0,-1.0,true);
-        //
-        message = "turn-forStones";
-        turnWithGyro(180,0.5);
-        //
-        message = "correct-3";
-        turnToAngle(-92,.05);//correction
-        //
-        if (position != 3){
-            leftHook.setPosition(hookDownLeft);
-        }
-        //
-        message = "slide-intoDMs";
-        moveWithSensor("left",36.0,false,.4,1.0,0.0,true);
-        //
-        leftHook.setPosition(hookUpLeft);
-        //
-        telemetry.addData("moving to","skystone");
-        telemetry.update();
-        //
-        if (position == 3){
-            message = "grab-2-pos3";
-            moveToPosition(10,.3,false);
-            //
-            message = "turn1-secureStone-pos3";
-            turnToAngle(-135,.6);
-            message = "turn2-secureStone-pos3";
-            turnToAngle(-180, .1);
-            //
-            message = "toStone-2-pos3";
-            setStage();
-            move(0, 1, .2);
-            while (!qbert.getState() && opModeIsActive() && leftTouch.getState() && rightTouch.getState()) {
-                if (!leftTouch.getState() || !rightTouch.getState()){
-                    return;
-                }
-                if(upity.getDistance(DistanceUnit.INCH) < 3.3){
-                    lifter.setPower(.6);
-                }else{
-                    lifter.setPower(0);
-                }
-            }
-            still();
-        }else {
-            message = "toStone-2-pos1,pos2";
-            setStage();
-            move(0, 1, .2);
-            while (!qbert.getState() && opModeIsActive() && leftTouch.getState() && rightTouch.getState()) {
-                if (!leftTouch.getState() || !rightTouch.getState()){
-                    return;
-                }
-            }
-            still();
-        }
-        //
-        message = "gantryDown-2";
-        setStage();
-        lifter.setPower(-.4);//gantry down to stone
-        while (!george.getState() && opModeIsActive()){}
-        lifter.setPower(0);
-        //
-        message = "grabStone-2";
-        setStage();
-        grabber.setPosition(grabClosed);
-        sleep(500);
-        //
-        message = "gantryUp-2";
-        setStage();
-        lifter.setPower(0.4);//gantry up
-        while (!(upity.getDistance(DistanceUnit.INCH) > 2.2) && opModeIsActive()){}
-        lifter.setPower(0);
-        //
-        if (position == 3){
-            message = "turn-toTape-pos3";
-            turnWithGyro(90,-.4);
-        }else{
-            message = "turn-toTape-pos1,pos2";
-            turnWithGyro(180,-.4);
-        }
-        //
-        turnToAngle(90,.05);
-        //
-        if (position == 1){
-            //
-            move(.7,.3,.7);
-            //
-        }else if (position == 2){
-            //
-            message = "wrapMove-pos2";
-            move(.34,.94,.7);
-            //
-        }else{
-            //
-            move(-.3,1,.7);
-            //
-        }
-        motorsWithEncoders();
-        double distanceHold = backR.getDistance(DistanceUnit.INCH);
-        while (!(distanceHold > 30) && opModeIsActive()) {
-            if (Math.abs(backR.getDistance(DistanceUnit.INCH) - distanceHold) < 20 && leftR.getDistance(DistanceUnit.INCH) < 500) {
-                distanceHold = backR.getDistance(DistanceUnit.INCH);
-            }
-            /*telemetry.addData("stage",message);
-            telemetry.addData("leftR", leftR.getDistance(DistanceUnit.INCH));
-            telemetry.addData("used", distanceHold);
-            telemetry.update();*/
-        }
-        still();
-        //
-        turnToAngle(90,.05);
-        //
-        message = "overTape-2";
-        moveWithSensor("back",62.0,false,.5,0.0,1.0,true);
-        //
-        grabber.setPosition(grabOpen);
-        //
-        message = "ontoTape";
-        moveToPosition(-10,.5,false);
     }
     //
 }
