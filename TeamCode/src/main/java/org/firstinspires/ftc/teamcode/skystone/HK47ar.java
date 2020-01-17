@@ -1,9 +1,11 @@
 package org.firstinspires.ftc.teamcode.skystone;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
+@Disabled
 @Autonomous(name = "HK47-all-red", group = "Sreal")
 public class HK47ar extends HoloLumi {
     //

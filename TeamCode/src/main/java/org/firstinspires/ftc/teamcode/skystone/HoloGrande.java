@@ -80,9 +80,9 @@ public abstract class HoloGrande extends LinearOpMode {
     //
     String message = "default";
     //
-    Boolean light = false;
+    Boolean light = true;
     //
-    Double gap1 = 2.0;//2.0
+    Double gap1 = -2.0;//2.0
     Double gap2 = 2.0;//2.0
     //
     private static MediaPlayer mediaPlayer = null;

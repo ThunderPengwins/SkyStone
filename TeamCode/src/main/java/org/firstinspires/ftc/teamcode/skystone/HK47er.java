@@ -1,9 +1,11 @@
 package org.firstinspires.ftc.teamcode.skystone;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
+@Disabled
 @Autonomous(name = "HK47-easy-red", group = "Sreal")
 public class HK47er extends HoloLumi {
     //
@@ -105,7 +107,7 @@ public class HK47er extends HoloLumi {
         still();
         boolean fail = false;
         if (backR.getDistance(DistanceUnit.INCH) > 60){//safety
-            fail = true;
+            return;
         }
         //
         message = "gantryDown-1";

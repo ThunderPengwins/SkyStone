@@ -19,6 +19,7 @@ public class K2 extends HoloLumi{
     float otherrighty;
     //
     double powerFactor = 1.0;
+    boolean powerChange = false;
     //
     double direction = 0;
     //
@@ -308,6 +309,17 @@ public class K2 extends HoloLumi{
             }*/
             //</editor-fold>
             //
+            if ((gamepad1.right_trigger > 0) && !powerChange){
+                if (powerFactor == 1.0){
+                    powerFactor = 0.5;
+                }else{
+                    powerFactor = 1.0;
+                }
+                powerChange = true;
+            }else if (!(gamepad1.right_trigger > 0) && powerChange){
+                powerChange = false;
+            }
+            //
             if (gamepad2.left_bumper){
                 ignore = true;
             }
@@ -340,21 +352,18 @@ public class K2 extends HoloLumi{
             telemetry.addData("mode", pMode);
             telemetry.addData("task", task);
             telemetry.addData("Planetary?", planetary);
-            telemetry.addData("conforming?", ma);
+            telemetry.addData("power",powerFactor);
+            //telemetry.addData("conforming?", ma);
             telemetry.addData("hieght of gantry", upity.getDistance(DistanceUnit.INCH));
             telemetry.addData("relative yaw", getAngle());
             telemetry.addData("absolute yaw", fixAngle(getAngle() - origin));
             telemetry.addData("origin", origin);
-            telemetry.addData("leftx", leftx);
-            telemetry.addData("lefty", lefty);
-            telemetry.addData("rightx", rightx);
-            telemetry.addData("extender", extender.getCurrentPosition());
-            telemetry.addData("position", pos);
             //</editor-fold>
         }
     }
     //
     public void movement(){
+        //
         if(leftx == 0 && lefty == 0 && rightx == 0 && !test){//no motion
             //
             still();
