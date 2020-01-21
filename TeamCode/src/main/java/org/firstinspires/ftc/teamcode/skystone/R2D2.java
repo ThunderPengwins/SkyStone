@@ -1,8 +1,10 @@
 package org.firstinspires.ftc.teamcode.skystone;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 @TeleOp(name = "R2-D2", group = "Stest")
+@Disabled
 public class R2D2 extends HoloLumi{
     //
     float leftx;

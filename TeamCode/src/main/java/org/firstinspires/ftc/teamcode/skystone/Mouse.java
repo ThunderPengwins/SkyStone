@@ -1,11 +1,13 @@
 package org.firstinspires.ftc.teamcode.skystone;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
 @TeleOp(name = "mouse", group = "Stest")
+@Disabled
 public class Mouse extends LinearOpMode {
     //right for in and out
     //

@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.statestone;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-@TeleOp(name = "FX-7", group = "Sreal")
+@TeleOp(name = "FX-7", group = "Stest")
 public class FX7 extends Myriad {
     //
     public void runOpMode() {

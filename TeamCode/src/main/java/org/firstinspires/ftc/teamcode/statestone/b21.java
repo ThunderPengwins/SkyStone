@@ -1,13 +1,11 @@
-package org.firstinspires.ftc.teamcode.skystone;
+package org.firstinspires.ftc.teamcode.statestone;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 @TeleOp(name = "2-1B", group = "Stest")
-@Disabled
-public class b21 extends HoloLumi {
+public class b21 extends Myriad {
     //
     public void runOpMode() {
         //
@@ -15,7 +13,7 @@ public class b21 extends HoloLumi {
         //
         firstHarwares();
         //
-        secondaryMotorReversals();
+        setMotorReversals();
         //
         motorsWithEncoders();
         //
@@ -23,28 +21,18 @@ public class b21 extends HoloLumi {
         //
         waitForStartify();
         //
-        leftColor.enableLed(false);
-        rightColor.enableLed(true);
+        boolean changing = false;
+        double flipos = 0.0;
         //
         while (opModeIsActive()){
             //
             extender.setPower(-gamepad2.right_stick_y);
             //
-            //telemetry.addData("front left distance", frontLeftD.getDistance(DistanceUnit.INCH));
-            //telemetry.addData("front right distance", frontRightD.getDistance(DistanceUnit.INCH));
-            telemetry.addData("left red", leftColor.red() + ", green: " + leftColor.green() + ", blue: " + leftColor.blue() + ", argb: " + leftColor.argb());
-            telemetry.addData("right red", rightColor.red() + ", green: " + rightColor.green() + ", blue: " + rightColor.blue() + ", argb: " + rightColor.argb());
-            telemetry.addData("right skystone?", rightColor.red());
+            telemetry.addData("flipos",flipos);
             telemetry.addData("grabber", grabber.getPosition());
             telemetry.addData("upity", upity.getDistance(DistanceUnit.INCH));
             telemetry.addData("left hook", leftHook.getPosition());
             telemetry.addData("right hook", rightHook.getPosition());
-            telemetry.addData("left distance", leftD.getDistance(DistanceUnit.INCH));
-            telemetry.addData("right distance", rightD.getDistance(DistanceUnit.INCH));
-            telemetry.addData("left range", leftR.getDistance(DistanceUnit.INCH));
-            telemetry.addData("right range", rightR.getDistance(DistanceUnit.INCH));
-            telemetry.addData("back range", backR.getDistance(DistanceUnit.INCH));
-            //telemetry.addData("back distance", backD.getDistance(DistanceUnit.INCH));
             telemetry.addData("qbert", qbert.getState());
             telemetry.addData("george", george.getState());
             telemetry.addData("in", inTouch.getState());
@@ -54,6 +42,18 @@ public class b21 extends HoloLumi {
             telemetry.addData("right touch", rightTouch.getState());
             telemetry.addData("Issue", "NextGen");
             telemetry.update();
+            //
+            if(gamepad1.dpad_up && !changing){
+                flipos += .1;
+                changing = true;
+            }else if (gamepad1.dpad_down && !changing){
+                flipos -= .1;
+                changing = true;
+            }else if (!gamepad1.dpad_up && !gamepad1.dpad_down && changing){
+                changing = false;
+            }
+            //
+            flippers.setPosition(flipos);
             //
         }
         //

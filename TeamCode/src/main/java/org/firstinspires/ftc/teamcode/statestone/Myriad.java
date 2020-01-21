@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.statestone;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
@@ -33,6 +32,7 @@ public abstract class Myriad extends LinearOpMode {
     //
     //<editor-fold desc="hardwares 1">
     Servo grabber;
+    Servo flippers;
     DcMotor lifter;
     DcMotor extender;
     DigitalChannel qbert;//cube in
@@ -46,14 +46,14 @@ public abstract class Myriad extends LinearOpMode {
     Servo rightHook;
     DigitalChannel leftTouch;
     DigitalChannel rightTouch;
-    ColorSensor leftColor;
-    ColorSensor rightColor;
+    //ColorSensor leftColor;
+    //ColorSensor rightColor;
     //
-    DistanceSensor leftD;
-    DistanceSensor rightD;
-    DistanceSensor leftR;
-    DistanceSensor rightR;
-    DistanceSensor backR;
+    //DistanceSensor leftD;
+    //DistanceSensor rightD;
+    //DistanceSensor leftR;
+    //DistanceSensor rightR;
+    //DistanceSensor backR;
     //
     Integer cpr = 28; //counts per rotation
     double gearratio = 20;
@@ -126,6 +126,7 @@ public abstract class Myriad extends LinearOpMode {
     //
     public void firstHarwares(){
         grabber = hardwareMap.servo.get("grabber");
+        flippers = hardwareMap.servo.get("flippers");
         lifter = hardwareMap.dcMotor.get("lifter");
         extender = hardwareMap.dcMotor.get("extender");
         qbert = hardwareMap.digitalChannel.get("qbert");
@@ -140,16 +141,16 @@ public abstract class Myriad extends LinearOpMode {
         rightHook = hardwareMap.servo.get("righthook");
         leftTouch = hardwareMap.digitalChannel.get("lefttouch");
         rightTouch = hardwareMap.digitalChannel.get("righttouch");
-        leftColor = hardwareMap.colorSensor.get("leftcolor");
-        rightColor = hardwareMap.colorSensor.get("rightcolor");
+        //leftColor = hardwareMap.colorSensor.get("leftcolor");
+        //rightColor = hardwareMap.colorSensor.get("rightcolor");
         //
         //frontLeftD = hardwareMap.get(DistanceSensor.class, "frontLeftCD");
         //frontRightD = hardwareMap.get(DistanceSensor.class, "frontRightCD");
-        leftD = hardwareMap.get(DistanceSensor.class, "leftD");
-        rightD = hardwareMap.get(DistanceSensor.class, "rightD");
-        leftR = hardwareMap.get(DistanceSensor.class, "leftR");
-        rightR = hardwareMap.get(DistanceSensor.class,"rightR");
-        backR = hardwareMap.get(DistanceSensor.class, "backR");
+        //leftD = hardwareMap.get(DistanceSensor.class, "leftD");
+        //rightD = hardwareMap.get(DistanceSensor.class, "rightD");
+        //leftR = hardwareMap.get(DistanceSensor.class, "leftR");
+        //rightR = hardwareMap.get(DistanceSensor.class,"rightR");
+        //backR = hardwareMap.get(DistanceSensor.class, "backR");
         qbert.setMode(DigitalChannel.Mode.INPUT);
         george.setMode(DigitalChannel.Mode.INPUT);
         //
@@ -401,6 +402,13 @@ public abstract class Myriad extends LinearOpMode {
     public double conformRight(double origin){
         //
         return Math.ceil((fixAngle(getAngle() - origin)) / 45) * 45;
+    }
+    //
+    public void still(){
+        frontRight.setPower(0);
+        frontLeft.setPower(0);
+        backLeft.setPower(0);
+        backRight.setPower(0);
     }
     //</editor-fold>
     //

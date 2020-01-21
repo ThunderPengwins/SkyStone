@@ -3,12 +3,14 @@ package org.firstinspires.ftc.teamcode.skystone;
 import android.content.Context;
 import android.media.MediaPlayer;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.R;
 
 @TeleOp(name = "noiseTest", group = "test")
+@Disabled
 public class noiseTest extends OpMode {
     private static MediaPlayer mediaPlayer = null;
     private boolean pressedLast;

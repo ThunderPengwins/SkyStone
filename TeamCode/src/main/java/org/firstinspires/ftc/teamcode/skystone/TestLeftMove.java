@@ -1,8 +1,10 @@
 package org.firstinspires.ftc.teamcode.skystone;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 @Autonomous(name = "Test Left Move", group = "Stest")
+@Disabled
 public class TestLeftMove extends HoloLumi {
     //
     Double gap1 = 0.0;//2.0

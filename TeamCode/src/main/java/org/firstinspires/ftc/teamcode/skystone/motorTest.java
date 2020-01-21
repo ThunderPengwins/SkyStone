@@ -1,10 +1,12 @@
 package org.firstinspires.ftc.teamcode.skystone;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 @TeleOp(name = "motor test", group = "testing")
+@Disabled
 public class motorTest extends LinearOpMode{
     //
     DcMotor up1;

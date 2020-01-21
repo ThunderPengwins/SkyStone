@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.statestone;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-@Autonomous(name = "Reliability", group = "Sreal")
+@Autonomous(name = "Reliability", group = "Stest")
 public class ReliabilityTest extends Myriad {
     //
     /*
