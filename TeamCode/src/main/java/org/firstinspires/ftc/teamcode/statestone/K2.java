@@ -420,8 +420,10 @@ public class K2 extends Myriad{
             lifter.setPower(0.2);
         }
         if (!extending && !gamepad2.y) {
-            extender.setPower(-otherrighty);
-            telemetry.addData("extending","normal");
+            if ((!inTouch.getState() && otherrighty > 0) || (!outTouch.getState() && otherrighty < 0)) {
+                extender.setPower(-otherrighty);
+                telemetry.addData("extending", "normal");
+            }
         }else if (!extending && gamepad2.y){
             extending = true;
             extender.setTargetPosition(extension);
