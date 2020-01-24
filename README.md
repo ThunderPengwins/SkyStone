@@ -1,6 +1,6 @@
 ## Thunder Pengwin Code
 
-This is the code base for the Thunder Pengwins. Feel free to use or copy whatever. Some CHAD files are included, but this is not the codebase for the CHAD website itself. Code is separated by package into seasons and sometime tournaments.
+This is the code base for the Thunder Pengwins. Feel free to use or copy whatever. The code is forked from the official FTC Skystone repository. Some CHAD files are included, but this is not the codebase for the CHAD website itself. Code is separated by package into seasons and sometime tournaments.
 
 ## DogeCV
 
