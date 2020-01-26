@@ -16,19 +16,19 @@ public class ReliabilityTest extends Myriad {
         //
         waitForStartify();
         //
-        moveToPosition(90,.3,false);
+        moveToPosition(90,.3);
         //
         sleep(200);
         //
-        strafeToPosition(90, .3,false);
+        strafeToPosition(90, .3);
         //
         sleep(200);
         //
-        moveToPosition(-90,.3,false);
+        moveToPosition(-90,.3);
         //
         sleep(200);
         //
-        strafeToPosition(-90,.3,false);
+        strafeToPosition(-90,.3);
         //
     }
     //

@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.statestone;
 
+import com.disnodeteam.dogecv.detectors.skystone.SkystoneDetector;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -9,14 +10,23 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraName;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraRotation;
+import org.openftc.easyopencv.OpenCvWebcam;
 
 public abstract class Myriad extends LinearOpMode {
     abstract public void runOpMode();
+    //
+    public OpenCvCamera webCam;
+    public SkystoneDetector skyStoneDetector;
+    public CameraName cameraName;
     //
     BNO055IMU imu;
     Orientation angles;
@@ -26,6 +36,8 @@ public abstract class Myriad extends LinearOpMode {
     DcMotor frontLeft;
     DcMotor backLeft;
     DcMotor backRight;
+    //
+    DcMotor scooper;
     //
     Double loctarang;
     Double glotarang;
@@ -59,7 +71,7 @@ public abstract class Myriad extends LinearOpMode {
     double gearratio = 20;
     Double diameter = 4.125;
     Double cpi = (cpr * gearratio)/(Math.PI * diameter); //counts per inch, 28cpr * gear ratio / (2 * pi * diameter (in inches, in the center))
-    Double bias = 0.8;
+    Double bias = 0.8;//0.714
     //
     Double conversion = cpi * bias;
     //
@@ -82,6 +94,24 @@ public abstract class Myriad extends LinearOpMode {
         setMotorReversals();
         //
         initGyro();
+        telemetry.addData("Initializing","DogeCV");
+        telemetry.update();
+        initDoge();
+        telemetry.addData("DogeCV", "Initialized");
+        telemetry.update();
+    }
+    //
+    public void fullDOInit(){
+        motorHardware();
+        secondHardwares();
+        //
+        resetEncoders();
+        motorsWithEncoders();
+        //
+        setMotorReversals();
+        //
+        initGyro();
+        initDoge();
     }
     //
     public void motorHardware(){
@@ -141,21 +171,15 @@ public abstract class Myriad extends LinearOpMode {
         rightHook = hardwareMap.servo.get("righthook");
         leftTouch = hardwareMap.digitalChannel.get("lefttouch");
         rightTouch = hardwareMap.digitalChannel.get("righttouch");
-        //leftColor = hardwareMap.colorSensor.get("leftcolor");
-        //rightColor = hardwareMap.colorSensor.get("rightcolor");
-        //
-        //frontLeftD = hardwareMap.get(DistanceSensor.class, "frontLeftCD");
-        //frontRightD = hardwareMap.get(DistanceSensor.class, "frontRightCD");
-        //leftD = hardwareMap.get(DistanceSensor.class, "leftD");
-        //rightD = hardwareMap.get(DistanceSensor.class, "rightD");
-        //leftR = hardwareMap.get(DistanceSensor.class, "leftR");
-        //rightR = hardwareMap.get(DistanceSensor.class,"rightR");
-        //backR = hardwareMap.get(DistanceSensor.class, "backR");
         qbert.setMode(DigitalChannel.Mode.INPUT);
         george.setMode(DigitalChannel.Mode.INPUT);
         //
         //extender.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         //
+    }
+    //
+    public void secondHardwares(){
+        scooper = hardwareMap.dcMotor.get("scooper");
     }
     //
     public void waitForStartify(){
@@ -177,6 +201,20 @@ public abstract class Myriad extends LinearOpMode {
         imu.initialize(parameters);
         telemetry.addData("imu initiated", "");
         telemetry.update();
+    }
+    //
+    public void initDoge(){
+        cameraName = hardwareMap.get(WebcamName.class,"webcam");
+        //
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        webCam = new OpenCvWebcam(cameraName, cameraMonitorViewId);
+        //
+        webCam.openCameraDevice();
+        //
+        skyStoneDetector = new SkystoneDetector();
+        webCam.setPipeline(skyStoneDetector);
+        //
+        webCam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
     }
     //</editor-fold>
     //
@@ -243,7 +281,7 @@ public abstract class Myriad extends LinearOpMode {
     //</editor-fold>
     //
     //<editor-fold desc="autonomous">
-    public void moveToPosition(double inches, double speed, boolean bridge){
+    public void moveToPosition(double inches, double speed){
         //
         int move = (int)(Math.round(inches*conversion));
         //
@@ -252,10 +290,7 @@ public abstract class Myriad extends LinearOpMode {
         backRight.setTargetPosition(backRight.getCurrentPosition() + move);
         frontRight.setTargetPosition(frontRight.getCurrentPosition() + move);
         //
-        frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        frontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motorsToPosition();
         //
         frontLeft.setPower(speed);
         backLeft.setPower(speed);
@@ -263,16 +298,14 @@ public abstract class Myriad extends LinearOpMode {
         backRight.setPower(speed);
         //
         while (frontLeft.isBusy() && frontRight.isBusy() && backLeft.isBusy() && backRight.isBusy() && opModeIsActive()){}
-        if (!bridge) {
-            frontRight.setPower(0);
-            frontLeft.setPower(0);
-            backRight.setPower(0);
-            backLeft.setPower(0);
-        }
+        frontRight.setPower(0);
+        frontLeft.setPower(0);
+        backRight.setPower(0);
+        backLeft.setPower(0);
         return;
     }
     //
-    public void strafeToPosition(double inches, double speed, boolean bridge){
+    public void strafeToPosition(double inches, double speed){
         //
         int move = (int)(Math.round(inches*conversion));
         //
@@ -292,13 +325,24 @@ public abstract class Myriad extends LinearOpMode {
         backRight.setPower(speed);
         //
         while (frontLeft.isBusy() && frontRight.isBusy() && backLeft.isBusy() && backRight.isBusy() && opModeIsActive()){}
-        if (!bridge) {
-            frontRight.setPower(0);
-            frontLeft.setPower(0);
-            backRight.setPower(0);
-            backLeft.setPower(0);
-        }
+        frontRight.setPower(0);
+        frontLeft.setPower(0);
+        backRight.setPower(0);
+        backLeft.setPower(0);
         return;
+    }
+    //
+    public int getSkystonePositionBlue(){
+        double x = skyStoneDetector.getAltRectx();
+        int position = 1;//1,2,3, 3 is wall
+        if (x < 100){
+            position = 1;
+        }else if (x < 200){
+            position = 2;
+        }else{
+            position = 3;
+        }
+        return position;
     }
     //</editor-fold>
     //
@@ -346,6 +390,29 @@ public abstract class Myriad extends LinearOpMode {
         backLeft.setPower(c);
         backRight.setPower(d);//set motor powers
         //
+    }
+    //
+    public void move(double x, double y, double factor){
+        //
+        motorsWithEncoders();
+        //
+        //double total = pythagorus(y, x);//find total power
+        double total = 1;
+        //
+        double angle = calcHoloAngle(x, y, total);//calculate angle of joystick
+        //
+        double aWheelsPower = Math.cos(angle * Math.PI / 180);
+        double bWheelsPower = Math.sin(angle * Math.PI / 180);//find power for a/b motors
+        //
+        telemetry.addData("a power", aWheelsPower);
+        telemetry.addData("b power", bWheelsPower);
+        //
+        frontRight.setPower(bWheelsPower * total * factor);
+        backLeft.setPower(bWheelsPower * total * factor);
+        frontLeft.setPower(aWheelsPower * total * factor);
+        backRight.setPower(aWheelsPower * total * factor);//set motor powers
+        //
+        telemetry.addData("front right set",bWheelsPower * total * factor + ", get: " + frontRight);
     }
     //
     public void globalMoveTurn(double x, double y, double t, double factor, double turnFactor, double origin) {

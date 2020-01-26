@@ -140,10 +140,10 @@ public class K2 extends Myriad{
                     lifter.setPower(0.8);
                 }else if (upity.getDistance(DistanceUnit.INCH) > 4){
                     lifter.setPower(-0.4);
-                    extender.setPower(-.3);
+                    //extender.setPower(-.3);
                 }else {
                     lifter.setPower(0.2);
-                    extender.setPower(0);
+                    //extender.setPower(0);
                 }
                 //
                 movement();
@@ -343,10 +343,15 @@ public class K2 extends Myriad{
                 mr = 1;
             }
             //
+            if (!inTouch.getState()){
+                extender.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            }
+            //
             //<editor-fold desc="telemetry">
             telemetry.update();
             telemetry.addData("mode", pMode);
             telemetry.addData("task", task);
+            telemetry.addData("extenderPos",extender.getCurrentPosition());
             telemetry.addData("Planetary?", planetary);
             telemetry.addData("power",powerFactor);
             //telemetry.addData("conforming?", ma);
@@ -420,9 +425,11 @@ public class K2 extends Myriad{
             lifter.setPower(0.2);
         }
         if (!extending && !gamepad2.y) {
-            if ((!inTouch.getState() && otherrighty > 0) || (!outTouch.getState() && otherrighty < 0)) {
-                extender.setPower(-otherrighty);
+            if ((inTouch.getState() && otherrighty <= 0) || (outTouch.getState() && otherrighty >= 0)) {
+                extender.setPower(-otherrighty * 0.6);
                 telemetry.addData("extending", "normal");
+            }else{
+                extender.setPower(0);
             }
         }else if (!extending && gamepad2.y){
             extending = true;
@@ -439,6 +446,8 @@ public class K2 extends Myriad{
             extender.setPower(0);
             extender.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             telemetry.addData("extending","stop move");
+        }else{
+            extender.setPower(0);
         }
         telemetry.addData("forward",extender.getCurrentPosition() < extension);
         if (gamepad2.x){

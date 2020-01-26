@@ -67,13 +67,26 @@ public class Cam extends Myriad{
          */
         waitForStart();
         //
-        while (opModeIsActive())
-        {
-            /*
-             * Send some stats to the telemetry
-             */
+        double x = skyStoneDetector.getScreenPosition().x;
+        int position = 1;
+        //
+        while (opModeIsActive()){
+            //
+            x = skyStoneDetector.getScreenPosition().x;
+            if (x < 100){
+                position = 1;
+            }else if (x < 200){
+                position = 2;
+            }else{
+                position = 3;
+            }
+            //
+            //telemetry.addData("Both Rect",skyStoneDetector.getBothX() + ", " + skyStoneDetector.getBothY());
+            telemetry.addData("alt Rect x", skyStoneDetector.getAltRectx());
             telemetry.addData("Best rect's area", skyStoneDetector.areaReturn);
-            telemetry.addData("Stone Position X", skyStoneDetector.getScreenPosition().x);
+            telemetry.addData("Position", position);
+            telemetry.addData("# of BestBlack",skyStoneDetector.getBestBlack());
+            telemetry.addData("Stone Position X", x);
             telemetry.addData("Stone Position Y", skyStoneDetector.getScreenPosition().y);
             telemetry.addData("Frame Count", webCam.getFrameCount());
             telemetry.addData("FPS", String.format(Locale.US, "%.2f", webCam.getFps()));
