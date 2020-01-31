@@ -69,9 +69,18 @@ public class DO extends Myriad{
             //
             direction = fixAngle(getAngle() - origin);
             //
-            scooper.setPower(-gamepad2.left_stick_y * 0.25);
+            if (gamepad1.right_trigger > 0){
+                scooper.setPower(gamepad1.right_trigger * 0.5);
+            }else{
+                scooper.setPower(gamepad1.left_trigger * -0.5);
+            }
+            //scooper.setPower(-gamepad2.left_stick_y * 0.5);
             //
             movement();
+            //
+            telemetry.addData("scoopDown",scoopDown.getState());
+            telemetry.addData("scoopUp",scoopUp.getState());
+            telemetry.update();
             //</editor-fold>
         }
     }

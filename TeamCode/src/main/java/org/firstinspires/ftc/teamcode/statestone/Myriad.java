@@ -39,6 +39,9 @@ public abstract class Myriad extends LinearOpMode {
     //
     DcMotor scooper;
     //
+    DigitalChannel scoopDown;
+    DigitalChannel scoopUp;
+    //
     Double loctarang;
     Double glotarang;
     //
@@ -180,6 +183,10 @@ public abstract class Myriad extends LinearOpMode {
     //
     public void secondHardwares(){
         scooper = hardwareMap.dcMotor.get("scooper");
+        scoopDown = hardwareMap.digitalChannel.get("scoopDown");
+        scoopUp = hardwareMap.digitalChannel.get("scoopUp");
+        //
+        scooper.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
     //
     public void waitForStartify(){
@@ -344,6 +351,118 @@ public abstract class Myriad extends LinearOpMode {
         }
         return position;
     }
+    //
+    public void turnWithGyro(double degrees, double speedDirection){
+        //<editor-fold desc="Initialize">
+        angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        double yaw = -angles.firstAngle;//make this negative
+        telemetry.addData("Speed Direction", speedDirection);
+        telemetry.addData("Yaw", yaw);
+        telemetry.update();
+        //
+        telemetry.addData("stuff", speedDirection);
+        telemetry.update();
+        //
+        double first;
+        double second;
+        //</editor-fold>
+        //
+        if (speedDirection > 0){//set target positions
+            //<editor-fold desc="turn right">
+            if (degrees > 10){
+                first = (degrees - 10) + devertify(yaw);
+                second = degrees + devertify(yaw);
+            }else{
+                first = devertify(yaw);
+                second = degrees + devertify(yaw);
+            }
+            //</editor-fold>
+        }else{
+            //<editor-fold desc="turn left">
+            if (degrees > 10){
+                first = devertify(-(degrees - 10) + devertify(yaw));
+                second = devertify(-degrees + devertify(yaw));
+            }else{
+                first = devertify(yaw);
+                second = devertify(-degrees + devertify(yaw));
+            }
+            //
+            //</editor-fold>
+        }
+        //
+        //<editor-fold desc="Go to position">
+        Double firsta = convertify(first - 5);//175
+        Double firstb = convertify(first + 5);//-175
+        //
+        turnWithEncoder(speedDirection);
+        //
+        if (Math.abs(firsta - firstb) < 11) {
+            while (!(firsta < yaw && yaw < firstb) && opModeIsActive()) {//within range?
+                angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+                gravity = imu.getGravity();
+                yaw = -angles.firstAngle;
+            }
+        }else{
+            //
+            while (!((firsta < yaw && yaw < 180) || (-180 < yaw && yaw < firstb)) && opModeIsActive()) {//within range?
+                angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+                gravity = imu.getGravity();
+                yaw = -angles.firstAngle;
+            }
+        }
+        //
+        Double seconda = convertify(second - 5);//175
+        Double secondb = convertify(second + 5);//-175
+        //
+        turnWithEncoder(speedDirection / 3);
+        //
+        if (Math.abs(seconda - secondb) < 11) {
+            while (!(seconda < yaw && yaw < secondb) && opModeIsActive()) {//within range?
+                angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+                gravity = imu.getGravity();
+                yaw = -angles.firstAngle;
+                telemetry.addData("Position", yaw);
+                telemetry.addData("second before", second);
+                telemetry.addData("second after", convertify(second));
+                telemetry.update();
+            }
+            while (!((seconda < yaw && yaw < 180) || (-180 < yaw && yaw < secondb)) && opModeIsActive()) {//within range?
+                angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+                gravity = imu.getGravity();
+                yaw = -angles.firstAngle;
+            }
+            frontLeft.setPower(0);
+            frontRight.setPower(0);
+            backLeft.setPower(0);
+            backRight.setPower(0);
+        }
+        //</editor-fold>
+        //
+        frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        frontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    }
+    public double devertify(double degrees){
+        if (degrees < 0){
+            degrees = degrees + 360;
+        }
+        return degrees;
+    }
+    public double convertify(double degrees){
+        if (degrees > 179){
+            degrees = -(360 - degrees);
+        } else if(degrees < -180){
+            degrees = 360 + degrees;
+        } else if(degrees > 360){
+            degrees = degrees - 360;
+        }
+        return degrees;
+    }
     //</editor-fold>
     //
     //<editor-fold desc="movement">
@@ -469,6 +588,15 @@ public abstract class Myriad extends LinearOpMode {
     public double conformRight(double origin){
         //
         return Math.ceil((fixAngle(getAngle() - origin)) / 45) * 45;
+    }
+    //
+    public void turnWithEncoder(double input){
+        motorsWithEncoders();
+        //
+        frontLeft.setPower(input);
+        backLeft.setPower(input);
+        frontRight.setPower(-input);
+        backRight.setPower(-input);
     }
     //
     public void still(){

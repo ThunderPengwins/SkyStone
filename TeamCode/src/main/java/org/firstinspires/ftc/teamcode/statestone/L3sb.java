@@ -2,10 +2,8 @@ package org.firstinspires.ftc.teamcode.statestone;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-
 @Autonomous (name="L3-Blue-Single", group="chad")
-public class L3 extends Myriad {
+public class L3sb extends Myriad {
     //
     /*DcMotor frontleft;
     DcMotor frontright;
@@ -28,7 +26,7 @@ public class L3 extends Myriad {
     //
     public void runOpMode(){
         //
-        fullInit();
+        fullDOInit();
         //
         waitForStartify();
         //
@@ -45,48 +43,41 @@ public class L3 extends Myriad {
         moveToPosition(8.6, 0.2);
         //
         if (position == 1){//1,2,3, 3 is wall
-            strafeToPosition(-9,.2);
+            strafeToPosition(-8,.2);
         }else if (position == 3){
-            strafeToPosition(9,.2);
+            strafeToPosition(8,.2);
         }
         //
-        //to first skystone
-        int move = (int)(Math.round(20*conversion));
+        moveToPosition(30,0.2);
         //
-        backLeft.setTargetPosition(backLeft.getCurrentPosition() + move);
-        frontLeft.setTargetPosition(frontLeft.getCurrentPosition() + move);
-        backRight.setTargetPosition(backRight.getCurrentPosition() + move);
-        frontRight.setTargetPosition(frontRight.getCurrentPosition() + move);
+        scooper.setPower(0.5);
         //
-        motorsToPosition();
+        sleep(700);
         //
-        move(0,1,0.2);
+        scooper.setPower(0);
         //
-        while (frontLeft.isBusy() && frontRight.isBusy() && backLeft.isBusy() && backRight.isBusy() && opModeIsActive()){
-            if (upity.getDistance(DistanceUnit.INCH) < 5.7){
-                lifter.setPower(0.5);
-            }else{
-                lifter.setPower(0.2);
-            }
+        sleep(500);
+        //
+        moveToPosition(-16,.2);
+        //
+        turnWithGyro(85,-.2);
+        //
+        scooper.setPower(-0.5);
+        while (scoopUp.getState()){}
+        scooper.setPower(0);
+        //
+        int x = 0;
+        if (position == 2){
+            x = 8;
+        }else if (position == 3){
+            x = 16;
         }
-        still();
         //
-        //away from stone
-        //moveToPosition(-3.4, 0.2);
+        moveToPosition(40 + x,.2);
         //
-        /*
-        //turn to make room for stone
-        turnWithGyro(90, -0.2);
+        sleep(500);
         //
-        //move to the foundation
-        moveToPosition(80.6, 0.2);
-        //
-        //to turn foundation to stack
-        turnWithGyro(90, 0.2);
-        //
-        //park under bridge
-        strafeToPosition(45.6, 0.2);
-         */
+        moveToPosition(-12,0.2);
         //
     }
     //
