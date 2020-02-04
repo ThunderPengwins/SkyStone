@@ -15,7 +15,7 @@ public class L3fr extends Myriad {
         //
         sleep(200);
         //
-        strafeToPosition(20,.2);
+        strafeToPosition(13,.2);
         //
         sleep(200);
         //
@@ -24,13 +24,13 @@ public class L3fr extends Myriad {
         scooper.setPower(0.5);
         sleep(700);
         //
-        moveToPosition(-55,.3);
+        moveToPosition(-60,.3);
         //
         scooper.setPower(-0.5);
         while (scoopUp.getState()) {}
         scooper.setPower(0);
         //
-        strafeToPosition(-57,.2);
+        strafeToPosition(-42,.2);
         //
     }
     //
