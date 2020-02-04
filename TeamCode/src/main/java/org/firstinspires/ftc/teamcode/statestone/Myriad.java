@@ -113,8 +113,8 @@ public abstract class Myriad extends LinearOpMode {
         //
         setMotorReversals();
         //
-        initGyro();
         initDoge();
+        initGyro();
     }
     //
     public void motorHardware(){
@@ -207,6 +207,7 @@ public abstract class Myriad extends LinearOpMode {
         telemetry.update();
         imu.initialize(parameters);
         telemetry.addData("imu initiated", "");
+        telemetry.addData("Angle",getAngle());
         telemetry.update();
     }
     //
@@ -305,10 +306,7 @@ public abstract class Myriad extends LinearOpMode {
         backRight.setPower(speed);
         //
         while (frontLeft.isBusy() && frontRight.isBusy() && backLeft.isBusy() && backRight.isBusy() && opModeIsActive()){}
-        frontRight.setPower(0);
-        frontLeft.setPower(0);
-        backRight.setPower(0);
-        backLeft.setPower(0);
+        still();
         return;
     }
     //
@@ -332,10 +330,7 @@ public abstract class Myriad extends LinearOpMode {
         backRight.setPower(speed);
         //
         while (frontLeft.isBusy() && frontRight.isBusy() && backLeft.isBusy() && backRight.isBusy() && opModeIsActive()){}
-        frontRight.setPower(0);
-        frontLeft.setPower(0);
-        backRight.setPower(0);
-        backLeft.setPower(0);
+        still();
         return;
     }
     //
@@ -348,6 +343,18 @@ public abstract class Myriad extends LinearOpMode {
             position = 2;
         }else{
             position = 3;
+        }
+        return position;
+    }
+    public int getSkystonePositionRed(){
+        double x = skyStoneDetector.getAltRectx();
+        int position = 1;//1,2,3, 3 is wall
+        if (x < 100){
+            position = 3;
+        }else if (x < 200){
+            position = 2;
+        }else{
+            position = 1;
         }
         return position;
     }
@@ -462,6 +469,86 @@ public abstract class Myriad extends LinearOpMode {
             degrees = degrees - 360;
         }
         return degrees;
+    }
+    //
+    public void turnToAngle(double angle, double speed){
+        //
+        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        double current = -angles.firstAngle;
+        //
+        if (current > angle){
+            turnWithEncoder(-speed);
+        }else{
+            turnWithEncoder(speed);
+        }
+        //
+        while (!(angle - 10 < current && current < angle + 10)){
+            angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+            current = -angles.firstAngle;
+            telemetry.addData("Target",angle);
+            telemetry.addData("Current",current);
+            telemetry.update();
+        }
+        still();
+        //
+    }
+    //
+    public void stageToPosition(double inches,double speed1, double speed2){
+        //
+        double Stage1;
+        double Stage2;
+        //
+        if (inches > 0){
+            Stage1 = inches - 10;
+            Stage2 = 10;
+        }else{
+            Stage1 = inches + 10;
+            Stage2 = -10;
+        }
+        //
+        int move1 = (int)(Math.round(Stage1*conversion));
+        int move2 = (int)(Math.round(Stage2*conversion));
+        int move = move1 + move2;
+        //
+        int bench = frontLeft.getCurrentPosition() + move1;
+        //
+        backLeft.setTargetPosition(backLeft.getCurrentPosition() + move);
+        frontLeft.setTargetPosition(frontLeft.getCurrentPosition() + move);
+        backRight.setTargetPosition(backRight.getCurrentPosition() + move);
+        frontRight.setTargetPosition(frontRight.getCurrentPosition() + move);
+        //
+        motorsToPosition();
+        //
+        frontLeft.setPower(speed1);
+        backLeft.setPower(speed1);
+        frontRight.setPower(speed1);
+        backRight.setPower(speed1);
+        //
+        boolean set = false;
+        //
+        while (frontLeft.isBusy() && frontRight.isBusy() && backLeft.isBusy() && backRight.isBusy() && opModeIsActive()){
+            //
+            if (inches > 0 && !set){
+                if (frontLeft.getCurrentPosition() > bench){
+                    frontLeft.setPower(speed2);
+                    backLeft.setPower(speed2);
+                    frontRight.setPower(speed2);
+                    backRight.setPower(speed2);
+                    set = true;
+                }
+            }else if (!set){
+                if (frontLeft.getCurrentPosition() < bench){
+                    frontLeft.setPower(speed2);
+                    backLeft.setPower(speed2);
+                    frontRight.setPower(speed2);
+                    backRight.setPower(speed2);
+                    set = true;
+                }
+            }
+            //
+        }
+        still();
+        return;
     }
     //</editor-fold>
     //

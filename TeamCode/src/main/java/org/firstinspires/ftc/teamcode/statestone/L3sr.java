@@ -2,8 +2,8 @@ package org.firstinspires.ftc.teamcode.statestone;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-@Autonomous (name="L3-Blue-Double", group="auto")
-public class L3db extends Myriad {
+@Autonomous (name="L3-Red-Single", group="auto")
+public class L3sr extends Myriad {
     //
     public void runOpMode(){
         //
@@ -17,7 +17,7 @@ public class L3db extends Myriad {
         telemetry.addData("DogeCV","Initialized");
         telemetry.update();
         //
-        int position = getSkystonePositionBlue();
+        int position = getSkystonePositionRed();
         telemetry.addData("position",position);
         telemetry.addData("X pos",skyStoneDetector.getAltRectx());
         telemetry.update();
@@ -26,111 +26,42 @@ public class L3db extends Myriad {
         moveToPosition(8.6, 0.2);
         //
         if (position == 1){//1,2,3, 3 is wall
-            strafeToPosition(-8,.2);
-        }else if (position == 3){
             strafeToPosition(8,.2);
+        }else if (position == 3){
+            strafeToPosition(-8,.2);
         }
         //
-        if (position == 3) {
-            moveToPosition(30, 0.3);
-            //scoop it
-            scooper.setPower(0.5);
-            //
-            sleep(700);
-            //
-            scooper.setPower(0);
-            //
-            sleep(500);
-            //pull back
-            moveToPosition(-16, .3);
-            //turn -90
-            turnWithGyro(83, -.2);
-            //scoop up
-            scooper.setPower(-0.5);
-            while (scoopUp.getState()) {}
-            scooper.setPower(0);
-            //across tape 56
-            stageToPosition(56,.4,2);
-            //
-            sleep(500);
-            //back 69.5
-            stageToPosition(-66.5,.4,.2);
-            //turn 90
-            turnWithGyro(86, .2);
-            //scooper down
-            scooper.setPower(0.5);
-            sleep(700);
-            scooper.setPower(0);
-            sleep(500);
-            //push stones out of way
-            moveToPosition(22, .2);
-            //go back
-            moveToPosition(-21, .3);
-            //turn -90
-            /*turnWithGyro(87, -.2);
-            //scoop up
-            scooper.setPower(-0.5);
-            while (scoopUp.getState()) {}
-            scooper.setPower(0);
-            //
-            moveToPosition(70, .4);//stage
-            //
-            moveToPosition(-12, .2);*/
-        }else {
-            //to stone
-            moveToPosition(30, 0.2);
-            //scoop it
-            scooper.setPower(0.5);
-            //
-            sleep(700);
-            //
-            scooper.setPower(0);
-            //
-            sleep(500);
-            //pull back
-            moveToPosition(-16, .2);
-            //turn -90
-            turnWithGyro(85, -.2);
-            //scoop up
-            scooper.setPower(-0.5);
-            while (scoopUp.getState()) {}
-            scooper.setPower(0);
-            //across tape
-            int x = 0;
-            if (position == 2) {
-                x = 8;
-            }
-            //
-            moveToPosition(40 + x, .3);
-            //
-            sleep(500);
-            //back
-            moveToPosition(-61.5 - x, 0.3);
-            //turn 90
-            turnWithGyro(87, .2);
-            //to 2nd stone
-            moveToPosition(17, .2);
-            //scoop it
-            scooper.setPower(0.5);
-            //
-            sleep(700);
-            //
-            scooper.setPower(0);
-            //
-            sleep(500);
-            //go back
-            moveToPosition(-16, .2);
-            //turn -90
-            turnWithGyro(87, -.2);
-            //scoop up
-            scooper.setPower(-0.5);
-            while (scoopUp.getState()) {}
-            scooper.setPower(0);
-            //
-            moveToPosition(62 + x, .3);
-            //
-            moveToPosition(-12, .2);
+        moveToPosition(30,0.2);
+        //
+        scooper.setPower(0.5);
+        //
+        sleep(700);
+        //
+        scooper.setPower(0);
+        //
+        sleep(500);
+        //
+        moveToPosition(-16,.2);
+        //
+        turnWithGyro(85,.2);
+        //
+        scooper.setPower(-0.5);
+        while (scoopUp.getState()){}
+        scooper.setPower(0);
+        //
+        int x = 0;
+        if (position == 2){
+            x = 8;
+        }else if (position == 3){
+            x = 16;
         }
+        //
+        moveToPosition(40 + x,.2);
+        //
+        sleep(500);
+        //
+        moveToPosition(-12,0.2);
+        //
     }
     //
     /*

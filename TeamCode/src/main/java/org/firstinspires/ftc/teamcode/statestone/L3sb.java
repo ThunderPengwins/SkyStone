@@ -2,27 +2,8 @@ package org.firstinspires.ftc.teamcode.statestone;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-@Autonomous (name="L3-Blue-Single", group="chad")
+@Autonomous (name="L3-Blue-Single", group="auto")
 public class L3sb extends Myriad {
-    //
-    /*DcMotor frontleft;
-    DcMotor frontright;
-    DcMotor backleft;
-    DcMotor backright;
-    //28 * 20 / (2ppi * 4.125)
-    Double width = 16.0; //inches
-    Integer cpr = 28; //counts per rotation
-    double gearratio = 20;
-    Double diameter = 4.125;
-    Double cpi = (cpr * gearratio)/(Math.PI * diameter); //counts per inch, 28cpr * gear ratio / (2 * pi * diameter (in inches, in the center))
-    Double bias = 0.714;
-    //
-    Double conversion = cpi * bias;
-    Boolean exit = false;
-    //
-    BNO055IMU imu;
-    Orientation angles;
-    Acceleration gravity;*/
     //
     public void runOpMode(){
         //
@@ -33,6 +14,8 @@ public class L3sb extends Myriad {
         telemetry.addData("Waiting for","DogeCV");
         telemetry.update();
         while (skyStoneDetector.getAltRectx() == 0 && opModeIsActive()){}
+        telemetry.addData("DogeCV","Initialized");
+        telemetry.update();
         //
         int position = getSkystonePositionBlue();
         telemetry.addData("position",position);
