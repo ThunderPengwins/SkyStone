@@ -30,7 +30,7 @@ public class L3fb extends Myriad {
         while (scoopUp.getState()) {}
         scooper.setPower(0);
         //
-        //turnToAngle(-180,.05);
+        turnPast(0,.05,true);
         //
         strafeToPosition(57,.2);
         //

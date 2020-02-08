@@ -30,6 +30,8 @@ public class L3fr extends Myriad {
         while (scoopUp.getState()) {}
         scooper.setPower(0);
         //
+        turnPast(0,.05,false);
+        //
         strafeToPosition(-42,.2);
         //
     }
