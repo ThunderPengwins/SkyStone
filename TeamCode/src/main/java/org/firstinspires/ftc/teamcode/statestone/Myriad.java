@@ -482,12 +482,29 @@ public abstract class Myriad extends LinearOpMode {
             turnWithEncoder(speed);
         }
         //
-        while (!(angle - 10 < current && current < angle + 10)){
+        while (!(angle - 5 < current && current < angle + 5)){
             angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
             current = -angles.firstAngle;
             telemetry.addData("Target",angle);
             telemetry.addData("Current",current);
             telemetry.update();
+        }
+        still();
+        //
+    }
+    //
+    public void turnPast(double angle, double speed, boolean right){
+        //
+        double current = getAngle();
+        //
+        if (right){
+            turnWithEncoder(speed);
+            //
+            while (!(getAngle() > angle)){}
+        }else {
+            turnWithEncoder(-speed);
+            //
+            while (!(getAngle() < angle)){}
         }
         still();
         //
@@ -546,6 +563,9 @@ public abstract class Myriad extends LinearOpMode {
                 }
             }
             //
+            telemetry.addData("target",frontLeft.getTargetPosition());
+            telemetry.addData("current",frontLeft.getCurrentPosition());
+            telemetry.update();
         }
         still();
         return;

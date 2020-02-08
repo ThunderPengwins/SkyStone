@@ -83,6 +83,7 @@ public class Cam extends Myriad{
             //
             //telemetry.addData("Both Rect",skyStoneDetector.getBothX() + ", " + skyStoneDetector.getBothY());
             telemetry.addData("alt Rect x", skyStoneDetector.getAltRectx());
+            telemetry.addData("alt Rect y", skyStoneDetector.getAltRecty());
             telemetry.addData("Best rect's area", skyStoneDetector.areaReturn);
             telemetry.addData("Position", position);
             telemetry.addData("# of BestBlack",skyStoneDetector.getBestBlack());

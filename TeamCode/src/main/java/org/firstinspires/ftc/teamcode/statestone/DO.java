@@ -26,6 +26,8 @@ public class DO extends Myriad{
     //
     double origin = 0;
     //
+    double scoopPower = 0.5;
+    //
     /*
     movement = still/global move turn
     mouse = extender and lifter
@@ -53,26 +55,24 @@ public class DO extends Myriad{
                 //orchosen = true;
             }
             //
-            /*if (planetary) {*/
-                leftx = gamepad1.left_stick_x;
-                lefty = -gamepad1.left_stick_y;
-                rightx = gamepad1.right_stick_x;
-                otherlefty = -gamepad2.left_stick_y;
-                otherrighty = -gamepad2.right_stick_y;
-            /*}else if (!planetary){
-                leftx = gamepad2.left_stick_x;
-                lefty = -gamepad2.left_stick_y;
-                rightx = gamepad2.right_stick_x;
-                otherlefty = -gamepad1.left_stick_y;
-                otherrighty = -gamepad1.right_stick_y;
-            }*/
+            leftx = gamepad1.left_stick_x;
+            lefty = -gamepad1.left_stick_y;
+            rightx = gamepad1.right_stick_x;
+            otherlefty = -gamepad2.left_stick_y;
+            otherrighty = -gamepad2.right_stick_y;
+            //
+            if (gamepad1.right_bumper){
+                scoopPower = 0.7;
+            }else if (gamepad1.left_bumper){
+                scoopPower = 0.5;
+            }
             //
             direction = fixAngle(getAngle() - origin);
             //
             if (gamepad1.right_trigger > 0){
-                scooper.setPower(gamepad1.right_trigger * 0.5);
+                scooper.setPower(gamepad1.right_trigger * scoopPower);
             }else{
-                scooper.setPower(gamepad1.left_trigger * -0.5);
+                scooper.setPower(-gamepad1.left_trigger * scoopPower);
             }
             //scooper.setPower(-gamepad2.left_stick_y * 0.5);
             //

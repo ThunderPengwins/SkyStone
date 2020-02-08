@@ -20,6 +20,7 @@ public class L3db extends Myriad {
         int position = getSkystonePositionBlue();
         telemetry.addData("position",position);
         telemetry.addData("X pos",skyStoneDetector.getAltRectx());
+        telemetry.addData("angle",getAngle());
         telemetry.update();
         //
         //to decision point
@@ -45,37 +46,69 @@ public class L3db extends Myriad {
             moveToPosition(-16, .3);
             //turn -90
             turnWithGyro(83, -.2);
+            //
+            turnPast(-88,.05,true);
+            //
             //scoop up
             scooper.setPower(-0.5);
             while (scoopUp.getState()) {}
             scooper.setPower(0);
             //across tape 56
-            stageToPosition(56,.4,2);
+            stageToPosition(54,.6,.2);
             //
-            sleep(500);
+            moveToPosition(-12,.2);
+            //
+            /*turnPast(-88,.05,true);
+            //
+            //sleep(500);
             //back 69.5
-            stageToPosition(-66.5,.4,.2);
+            stageToPosition(-62.5,.6,.2);
             //turn 90
-            turnWithGyro(86, .2);
+            turnWithGyro(80, .2);
+            turnPast(2,.05,true);
             //scooper down
             scooper.setPower(0.5);
             sleep(700);
             scooper.setPower(0);
             sleep(500);
             //push stones out of way
-            moveToPosition(22, .2);
+            moveToPosition(18, .3);
             //go back
-            moveToPosition(-21, .3);
-            //turn -90
-            /*turnWithGyro(87, -.2);
-            //scoop up
             scooper.setPower(-0.5);
             while (scoopUp.getState()) {}
             scooper.setPower(0);
             //
-            moveToPosition(70, .4);//stage
+            moveToPosition(-18, .3);
             //
-            moveToPosition(-12, .2);*/
+            strafeToPosition(9,.4);
+            //
+            turnPast(0,.1,false);
+            //
+            moveToPosition(13,.4);
+            //
+            scooper.setPower(0.5);
+            sleep(700);
+            //
+            turnWithGyro(12,.5);
+            //
+            turnPast(0,.05,false);
+            //
+            strafeToPosition(-10,.3);
+            //
+            moveToPosition(-15,.3);
+            //
+            turnWithGyro(85,-.2);
+            //
+            scooper.setPower(0);
+            //
+            /*scooper.setPower(-0.5);
+            while (scoopUp.getState()) {}
+            scooper.setPower(0);
+            //
+            stageToPosition(65, 1.0,.2);
+            //
+            moveToPosition(-12, .6);*/
+            //
         }else {
             //to stone
             moveToPosition(30, 0.2);
@@ -103,6 +136,8 @@ public class L3db extends Myriad {
             //
             moveToPosition(40 + x, .3);
             //
+            turnPast(-88,.05,true);
+            //
             sleep(500);
             //back
             moveToPosition(-61.5 - x, 0.3);
@@ -126,6 +161,8 @@ public class L3db extends Myriad {
             scooper.setPower(-0.5);
             while (scoopUp.getState()) {}
             scooper.setPower(0);
+            //
+            turnPast(-90,.1,true);
             //
             moveToPosition(62 + x, .3);
             //

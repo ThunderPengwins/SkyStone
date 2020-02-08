@@ -12,13 +12,13 @@ public class ReliabilityTest extends Myriad {
     //
     public void runOpMode() {
         //
-        fullInit();
+        fullDOInit();
         //
         waitForStartify();
         //
-        moveToPosition(90,.3);
+        stageToPosition(50,.4,.2);
         //
-        sleep(200);
+        /*sleep(200);
         //
         strafeToPosition(90, .3);
         //
@@ -28,7 +28,7 @@ public class ReliabilityTest extends Myriad {
         //
         sleep(200);
         //
-        strafeToPosition(-90,.3);
+        strafeToPosition(-90,.3);*/
         //
     }
     //
