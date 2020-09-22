@@ -1,8 +1,10 @@
 package org.firstinspires.ftc.teamcode.statestone;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 @Autonomous (name="L3-Blue-Double", group="auto")
+@Disabled
 public class L3db extends Myriad {
     //
     public void runOpMode(){
@@ -162,7 +164,7 @@ public class L3db extends Myriad {
             while (scoopUp.getState()) {}
             scooper.setPower(0);
             //
-            turnPast(-90,.1,true);
+            turnPast(-92,.1,true);
             //
             moveToPosition(62 + x, .3);
             //

@@ -10,7 +10,6 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 //Created by Eric on 6/10/2018.
 
 @TeleOp(name="answerKey",group="evolve") //Step 1, @Teleop, name & group, Okay to import
-
 public class answerKey extends LinearOpMode { //Step 2, extends..., light bulb>make abstract
     //
     DcMotor left;

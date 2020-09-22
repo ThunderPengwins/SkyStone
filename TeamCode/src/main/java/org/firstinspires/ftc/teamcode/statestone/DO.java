@@ -1,8 +1,10 @@
 package org.firstinspires.ftc.teamcode.statestone;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 @TeleOp(name = "D-O", group = "Sreal")
+@Disabled
 public class DO extends Myriad{
     //
     boolean planetary = true;
@@ -14,7 +16,7 @@ public class DO extends Myriad{
     float otherlefty;
     float otherrighty;
     //
-    double powerFactor = 1.0;
+    double powerFactor = 0.8;
     //
     double direction = 0;
     //
@@ -23,6 +25,10 @@ public class DO extends Myriad{
     double mT = 0;
     boolean ma = false;
     double mr = 0;
+    //
+    boolean moving = false;
+    boolean conforming = false;
+    boolean conformRight = true;
     //
     double origin = 0;
     //
@@ -66,6 +72,10 @@ public class DO extends Myriad{
             }else if (gamepad1.left_bumper){
                 scoopPower = 0.5;
             }
+            //
+            //if (leftx != 0 )
+            //
+            //if (gamepad1.dpad_left){}
             //
             direction = fixAngle(getAngle() - origin);
             //

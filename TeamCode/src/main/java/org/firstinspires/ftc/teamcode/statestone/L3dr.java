@@ -1,8 +1,10 @@
 package org.firstinspires.ftc.teamcode.statestone;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 @Autonomous (name="L3-Red-Double", group="auto")
+@Disabled
 public class L3dr extends Myriad {
     //
     public void runOpMode(){
@@ -19,7 +21,7 @@ public class L3dr extends Myriad {
         //
         int position = getSkystonePositionRed();
         telemetry.addData("position",position);
-        telemetry.addData("X pos",skyStoneDetector.getAltRectx());
+        telemetry.addData("X pos",skyStoneDetector.getSecRectx());
         telemetry.addData("angle",getAngle());
         telemetry.update();
         //
@@ -111,7 +113,7 @@ public class L3dr extends Myriad {
             while (scoopUp.getState()) {}
             scooper.setPower(0);
             //
-            turnPast(90,.1,false);
+            turnPast(92,.1,false);
             //
             moveToPosition(62 + x, .3);
             //

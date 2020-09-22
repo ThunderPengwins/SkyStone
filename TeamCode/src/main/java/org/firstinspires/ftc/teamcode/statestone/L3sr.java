@@ -1,8 +1,10 @@
 package org.firstinspires.ftc.teamcode.statestone;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 @Autonomous (name="L3-Red-Single", group="auto")
+@Disabled
 public class L3sr extends Myriad {
     //
     public void runOpMode(){

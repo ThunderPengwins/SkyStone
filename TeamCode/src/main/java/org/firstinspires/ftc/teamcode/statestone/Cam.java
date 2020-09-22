@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.statestone;
 
 import com.disnodeteam.dogecv.detectors.skystone.SkystoneDetector;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraName;
@@ -12,6 +13,7 @@ import org.openftc.easyopencv.OpenCvWebcam;
 import java.util.Locale;
 
 @TeleOp(name="Cam", group="Stest")
+@Disabled
 public class Cam extends Myriad{
     private OpenCvCamera webCam;
     private SkystoneDetector skyStoneDetector;

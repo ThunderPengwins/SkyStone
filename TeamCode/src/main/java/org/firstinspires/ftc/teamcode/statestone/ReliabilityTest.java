@@ -1,8 +1,10 @@
 package org.firstinspires.ftc.teamcode.statestone;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 @Autonomous(name = "Reliability", group = "Stest")
+@Disabled
 public class ReliabilityTest extends Myriad {
     //
     /*

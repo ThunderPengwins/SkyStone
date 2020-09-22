@@ -1,10 +1,12 @@
 package org.firstinspires.ftc.teamcode.statestone;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 @TeleOp(name = "2-1B", group = "Stest")
+@Disabled
 public class b21 extends Myriad {
     //
     public void runOpMode() {
