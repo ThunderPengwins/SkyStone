@@ -1,8 +1,5 @@
 package com.disnodeteam.dogecv.filters;
 
-import android.graphics.Color;
-import android.util.Log;
-
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Scalar;
@@ -22,7 +19,8 @@ public class LeviColorFilter extends DogeCVColorFilter {
         RED,
         BLUE,
         YELLOW,
-        WHITE
+        WHITE,
+        ORANGE
     }
 
     // Default settings
@@ -116,6 +114,30 @@ public class LeviColorFilter extends DogeCVColorFilter {
                     Imgproc.threshold(channels.get(1), mask, threshold, 255, Imgproc.THRESH_BINARY_INV);
                 }
 
+                break;
+            case ORANGE:
+                if(threshold == -1){
+                    threshold = 70;
+                }
+
+                lab = new Mat(input.size(), 0);
+                Imgproc.cvtColor(input, lab, Imgproc.COLOR_RGB2Lab);
+                temp = new Mat();
+                Core.inRange(input, new Scalar(0,0,0), new Scalar(255,150,164), temp);
+                mask2 = new Mat(input.size(), 0);
+                temp.copyTo(mask2);
+                input.copyTo(input, mask2);
+                mask2.release();
+                temp.release();
+                lab.release();
+
+                Imgproc.cvtColor(input, input, Imgproc.COLOR_RGB2YUV);
+                Imgproc.GaussianBlur(input,input,new Size(3,3),0);
+                Core.split(input, channels);
+                if(channels.size() > 0){
+                    Imgproc.threshold(channels.get(1), mask, threshold, 255, Imgproc.THRESH_BINARY_INV);
+                }
+                //
                 break;
         }
 

@@ -6,6 +6,7 @@ import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -15,8 +16,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
-import org.openftc.easyopencv.OpenCvWebcam;
 
 public abstract class jeremy extends LinearOpMode {
     public OpenCvCamera webCam;
@@ -34,6 +35,8 @@ public abstract class jeremy extends LinearOpMode {
     //
     Double loctarang;//local
     Double glotarang;
+    //
+    DistanceSensor test;
     //
     Integer cpr = 28; //counts per rotation
     double gearratio = 20;
@@ -58,6 +61,7 @@ public abstract class jeremy extends LinearOpMode {
     //
     public void InitLite(){
         motorHardware();
+        sensorHardware();
         //
         resetEncoders();
         motorsWithEncoders();
@@ -72,6 +76,10 @@ public abstract class jeremy extends LinearOpMode {
         frontLeft = hardwareMap.dcMotor.get("frontleft");
         backRight = hardwareMap.dcMotor.get("backright");
         backLeft = hardwareMap.dcMotor.get("backleft");
+    }
+    //
+    public void sensorHardware(){
+        test = hardwareMap.get(DistanceSensor.class, "test");
     }
     //
     public void setMotorReversals(){
@@ -136,7 +144,7 @@ public abstract class jeremy extends LinearOpMode {
         telemetry.addData("Stage 2", "Viewport found");
         telemetry.update();
         sleep(2000);
-        webCam = new OpenCvWebcam(cameraName, cameraMonitorViewId);
+        webCam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "webcam"), cameraMonitorViewId);
         telemetry.addData("Stage 3", "Webcam created");
         telemetry.addData("Monitor ID", cameraMonitorViewId);
         telemetry.update();

@@ -16,5 +16,12 @@ apply from: '../build.common.gradle'
 
 dependencies {
     implementation project(':DogeCV')
+    implementation 'org.openftc:easyopencv:1.4.1'
     // other dependencies
 }
+
+/*allprojects {
+    repositories {
+        maven { url 'https://jitpack.io' } // this line!
+    }
+}*/

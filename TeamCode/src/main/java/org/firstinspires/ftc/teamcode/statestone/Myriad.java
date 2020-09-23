@@ -18,8 +18,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
-import org.openftc.easyopencv.OpenCvWebcam;
 
 public abstract class Myriad extends LinearOpMode {
     abstract public void runOpMode();
@@ -215,7 +215,8 @@ public abstract class Myriad extends LinearOpMode {
         cameraName = hardwareMap.get(WebcamName.class,"webcam");
         //
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        webCam = new OpenCvWebcam(cameraName, cameraMonitorViewId);
+        //webCam = new OpenCvWebcam(cameraName, cameraMonitorViewId);
+        webCam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "webcam"), cameraMonitorViewId);
         //
         webCam.openCameraDevice();
         //
