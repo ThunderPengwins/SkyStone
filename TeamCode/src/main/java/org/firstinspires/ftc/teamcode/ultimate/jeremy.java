@@ -274,6 +274,10 @@ public abstract class jeremy extends LinearOpMode {
         //
     }
     //
+    public void globalMeccMove(double x, double y, double t, double Gfac, double Hfac, double origin){
+        //
+    }
+    //
     public void turnWithEncoder(double input){
         motorsWithEncoders();
         //

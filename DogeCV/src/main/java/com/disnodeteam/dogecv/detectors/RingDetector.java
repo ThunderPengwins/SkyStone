@@ -24,7 +24,7 @@ public class RingDetector extends DogeCVDetector {
     //
     //Create the default filters and scorers
     //public DogeCVColorFilter filter = new LeviColorFilter(LeviColorFilter.ColorPreset.YELLOW, 70); //Default Yellow blackFilter
-    public DogeCVColorFilter filter = new LeviColorFilter(LeviColorFilter.ColorPreset.ORANGE, 70);//Custom Orange test filter
+    public DogeCVColorFilter filter = new LeviColorFilter(LeviColorFilter.ColorPreset.ORANGE, 85);//Custom Orange test filter
 
     public int stonesToFind = 2;
     //

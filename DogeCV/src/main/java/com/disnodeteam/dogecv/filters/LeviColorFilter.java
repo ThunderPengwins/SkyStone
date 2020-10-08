@@ -123,14 +123,14 @@ public class LeviColorFilter extends DogeCVColorFilter {
                 lab = new Mat(input.size(), 0);
                 Imgproc.cvtColor(input, lab, Imgproc.COLOR_RGB2Lab);
                 temp = new Mat();
-                Core.inRange(input, new Scalar(0,0,0), new Scalar(255,150,164), temp);
+                Core.inRange(input, new Scalar(0,0,0), new Scalar(255, 228, 164), temp);
                 mask2 = new Mat(input.size(), 0);
                 temp.copyTo(mask2);
                 input.copyTo(input, mask2);
                 mask2.release();
                 temp.release();
                 lab.release();
-
+                //
                 Imgproc.cvtColor(input, input, Imgproc.COLOR_RGB2YUV);
                 Imgproc.GaussianBlur(input,input,new Size(3,3),0);
                 Core.split(input, channels);
