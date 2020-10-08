@@ -4,4 +4,4 @@ This is the code base for the Thunder Pengwins. Feel free to use or copy whateve
 
 ## DogeCV
 
-Several of these files pull from the DogeCV library: https://github.com/dogecv/DogeCV. The library was imported as an external Module into the project, so fully downloading this repository may cause some issues in that regard. To fix these issues, download the DogeCV library as a zip and import it as a new Module in your Android Studio project.
+Several of these files pull from the DogeCV library: https://github.com/dogecv/DogeCV. The library was imported as an external Module into the project, so fully downloading this repository may cause some issues in that regard. To fix these issues, follow the install instructions on the DogeCV GitHub page to separately install via Gradle files into External Libraries.
