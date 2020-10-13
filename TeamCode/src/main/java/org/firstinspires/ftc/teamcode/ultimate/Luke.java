@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 public class Luke extends jeremy {
     //
     double powerFactor = 1.0;
+    double horiFactor = 0.9;
     //
     float leftx;
     float lefty;
@@ -52,13 +53,7 @@ public class Luke extends jeremy {
                 //
             }else{//moving
                 //
-                globalMoveTurn(leftx, lefty, rightx, powerFactor, 0.5, origin);
-                //
-                /*if (ma) {
-                    globalMoveTurn(leftx, lefty, mr, powerFactor, 0.5, origin);
-                } else {
-                    globalMoveTurn(leftx, lefty, rightx, powerFactor, 0.5, origin);
-                }*/
+                globalMeccMove(leftx, lefty, rightx, powerFactor, 0.5, horiFactor, origin);
                 //
             }
             //

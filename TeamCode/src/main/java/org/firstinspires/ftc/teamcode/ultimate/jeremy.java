@@ -274,7 +274,53 @@ public abstract class jeremy extends LinearOpMode {
         //
     }
     //
-    public void globalMeccMove(double x, double y, double t, double Gfac, double Hfac, double origin){
+    public void globalMeccMove(double x, double y, double t, double Gfac, double Tfac, double Hfac, double origin){
+        //
+        double cang = fixAngle(getAngle() - origin);
+        //
+        double total = pythagorus(y, x);//find total power
+        //
+        double aWheelsPower;
+        double bWheelsPower;
+        //
+        if (total == 0) {
+            aWheelsPower = 0;
+            bWheelsPower = 0;
+        } else {
+            double h = calcHoloAngle(x, y, total);//calculate angle of joystick
+            loctarang = h;
+            //
+            double g = h + cang;
+            //g = fixAngle(g);
+            glotarang = g;
+            //
+            double rawb = (Math.sin(Math.toRadians(g)) - (Hfac * Math.cos(Math.toRadians(g)))) / -2;
+            double rawa = Hfac * Math.cos(Math.toRadians(g)) - rawb;
+            //
+            double maxAngle = Math.atan(1 / -Hfac);
+            double maxPower = (Math.sin(maxAngle) - (Hfac * Math.cos(maxAngle))) / -2;
+            //
+            aWheelsPower = rawa * (1 / maxPower);//front left & back right
+            bWheelsPower = rawb * (1 / maxPower);//front right & back left
+        }
+        //
+        double moveP = 0.5;
+        if(aWheelsPower == 0 && bWheelsPower == 0){
+            moveP = 0;
+        }else if(t == 0){
+            moveP = 1;
+        }
+        double turnP = 1 - moveP;
+        //
+        double a = ((moveP * aWheelsPower * total) + (turnP * Tfac * t)) * Gfac;//front left
+        double b = ((moveP * bWheelsPower * total) + (-turnP * Tfac * t)) * Gfac;//front right
+        double c = ((moveP * bWheelsPower * total) + (turnP * Tfac * t)) * Gfac;//back left
+        double d = ((moveP * aWheelsPower * total) + (-turnP * Tfac * t)) * Gfac;//back right
+        //
+        frontLeft.setPower(a);
+        frontRight.setPower(b);
+        backLeft.setPower(c);
+        backRight.setPower(d);//set motor powers
         //
     }
     //

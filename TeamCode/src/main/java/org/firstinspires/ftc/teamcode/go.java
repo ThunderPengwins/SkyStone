@@ -13,8 +13,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
-@Autonomous (name="helloWorld", group="chad")
-public class helloWorld extends LinearOpMode {
+@Autonomous (name="go", group="chad")
+public class go extends LinearOpMode {
     //
     DcMotor frontleft;
     DcMotor frontright;
@@ -49,11 +49,19 @@ public class helloWorld extends LinearOpMode {
         //
         waitForStartify();
         //
-        moveToPosition(40, 0.2);
+        moveToPosition(30, 0.2);
         //
-        turnWithGyro(90, 0.2);
+        turnWithGyro(46, -0.2);
         //
-        strafeToPosition(40.0, 0.2);
+        moveToPosition(15, 0.2);
+        //
+        turnWithGyro(47, -0.2);
+        //
+        moveToPosition(-30, 0.2);
+        //
+        strafeToPosition(-40.0, 0.2);
+        //
+        moveToPosition(17.2, 0.2);
         //
     }
     //
